@@ -52,3 +52,6 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# I need to force this file
+settings.json
