@@ -119,13 +119,19 @@ class imgurfetcher:
             True if everything is fine
     """
     def fetch(self, imgobject, filename):
+
         assert(imgobject is not None)
         assert(filename is not None)
         assert(isinstance(filename, str))
 
+        
+
         req = requests.get(imgobject.link)
-        root, ext = os.path.splitext(imgobject.link)
-        filename = "{}{}".format(filename, ext)
+
+        # if we aren't provided an extension, we will do it for you.
+        if len(os.path.splitext(filename)[1]) == 0:
+            root, ext = os.path.splitext(imgobject.link)
+            filename = "{}{}".format(filename, ext)
         
         with open(filename, 'wb') as fp:
             for chunk in req.iter_content():
