@@ -1,0 +1,23 @@
+{"fetcher":{
+        "keywords": [ "Mexico",
+                      "Mountain",
+                      "Forest"
+                    ],
+        
+        "subreddits": [ "earthporn"
+                    ],
+
+        "client_id":"[redacted]",
+        "client_secret": "[redacted]",
+        "blacklist_words":["gore"]
+        },
+ "daemon":{
+        "fetcher":"imgurfetcher",
+        "frequency":80000,
+        "retries":10,
+        "slack":10,
+        "target":"/home/santiago/Documents/Background/bg.jpg",
+        "backup":"yes"
+        }
+
+}
