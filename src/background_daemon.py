@@ -4,6 +4,7 @@ import datetime
 import shutil
 import json
 import time
+import subprocess, shlex
 from imgurfetcher import imgurfetcher
 """
     Background daemon.
@@ -29,15 +30,19 @@ from imgurfetcher import imgurfetcher
         backup:     A boolean flag that's used upon saving to backup the
                     previous image
 
+        update_hook:A command to call with "subprocess" once the image has
+                    been placed correctly.
+
 """
 class background_daemon:
 
-    fetcher   = None
-    target    = None
-    frequency = None
-    retries   = None
-    slack     = None
-    backup    = None
+    fetcher     = None
+    target      = None
+    frequency   = None
+    retries     = None
+    slack       = None
+    backup      = None
+    update_hook = None
 
 
     """
@@ -134,6 +139,10 @@ class background_daemon:
                     pass
             else:
                 raise
+       
+        # Run the update command
+        if self.update_hook:
+            subprocess.call(shlex.split(self.update_hook))
 
     """
         poll method.
