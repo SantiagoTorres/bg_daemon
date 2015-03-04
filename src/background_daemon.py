@@ -149,12 +149,57 @@ class background_daemon:
 
         Checks whether is time to update or not
 
-        TODO: this
     """
     def poll(self):
+    
+        print("Polling")
+        if os.path.exists("timestamp") and os.path.isfile("timestamp"):
+            with open("timestamp") as fp:
+                timestamp = fp.read()
+            
+            try:
+                updatedate = datetime.datetime.fromtimestamp(float(timestamp))
+            except:
+                print("timestamp is corrupted!, initializing...")
+                return self._initialize_datetime()
 
-        pass
+            if datetime.datetime.now() > updatedate:
+                print("updating")
+                self.update()
+                nexttimestamp = updatedate + datetime.timedelta(
+                        seconds = self.frequency)
+                
+                with open("timestamp", "wt") as fp:
+                    fp.write(nexttimestamp.strftime("%s"))
 
+                return True
+
+            else:
+                return False
+
+        else:
+            print("No timestamp found! initializing...")
+            return self._initialize_timestamp()
+
+    """
+        _initialize_timestamp()
+
+        If the timestamp file is corrupted or missing, reconstruct it from
+        now
+    """
+    def _initialize_timestamp(self):
+        
+        try:
+            with open("timestamp", "wb") as fp:
+                nexttimestamp = datetime.datetime.now() + datetime.timedelta(
+                        seconds = self.frequency)
+                fp.write(nexttimestamp.strftime("%s"))
+
+            return True
+
+        except:
+            # TODO: error handling here could be friendlier
+            raise
 
 
 """
@@ -163,5 +208,5 @@ class background_daemon:
 """
 if __name__ == "__main__":
     daemon = background_daemon()
-    daemon.update()
+    daemon.poll()
 
