@@ -158,7 +158,7 @@ class imgurfetcher:
             subreddit = random.choice(self.subreddits)
 
         # get a random number of keywords and build a query
-        number_of_keywords = random.randint(1, len(self.keywords))
+        number_of_keywords = random.randint(1, 2)
         random.shuffle(self.keywords)
         keywords = self.keywords[:number_of_keywords]
         query = ''
