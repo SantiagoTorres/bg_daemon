@@ -13,13 +13,12 @@
         "subreddits": [ "earthporn"
                     ],
 
-        "client_id":"[redacted]",
-        "client_secret": "[redacted]",
+        "client_id":"b0d705fbff41bc1",
         "blacklist_words":["gore"]
     },
     "daemon":{
         "fetcher":"imgurfetcher",
-        "frequency":80000,
+        "frequency":60,
         "retries":10,
         "slack":10,
         "target":"/home/santiago/Documents/Backgrounds/bg.jpg",

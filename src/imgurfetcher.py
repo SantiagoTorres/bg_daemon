@@ -23,8 +23,6 @@ import json
 
         client_id: you will have to set this up so the API accepts your request
 
-        client_secret: same idea here.
-
         min_height: use the size of your screen here, so nothing is too ugly
 
         min_width: same idea here
@@ -96,7 +94,7 @@ class imgurfetcher:
         print query
 
         # Download gallery data
-        client = ImgurClient(self.client_id, self.client_secret) 
+        client = ImgurClient(self.client_id, None) 
         data = client.gallery_search(query, sort='time', window='month',
                 page = 0)
 
@@ -125,7 +123,6 @@ class imgurfetcher:
         assert(isinstance(filename, str))
 
         
-
         req = requests.get(imgobject.link)
 
         # if we aren't provided an extension, we will do it for you.
