@@ -5,7 +5,10 @@ import shutil
 import json
 import time
 import subprocess, shlex
-from imgurfetcher import imgurfetcher
+
+from bg_daemon.fetchers.imgurfetcher import imgurfetcher
+from pkg_resources import Requirement, resource_filename, resource_string
+
 """
     Background daemon.
 
@@ -55,7 +58,10 @@ class background_daemon:
             
             filename: The location of the settings file.
     """
-    def __init__(self, filename = 'settings.json'):
+    def __init__(self, filename = None):
+
+        if not filename:
+            filename = resource_filename("bg_daemon", "settings.json")
 
         try:
             with open(filename) as fp:
@@ -152,9 +158,12 @@ class background_daemon:
     """
     def poll(self):
     
+        filename = resource_filename("bg_daemon", "")
+        filename = os.path.join(filename, "timestamp")
+
         print("Polling")
-        if os.path.exists("timestamp") and os.path.isfile("timestamp"):
-            with open("timestamp") as fp:
+        if os.path.exists(filename) and os.path.isfile(filename):
+            with open(filename) as fp:
                 timestamp = fp.read()
             
             try:
@@ -169,7 +178,7 @@ class background_daemon:
                 nexttimestamp = updatedate + datetime.timedelta(
                         seconds = self.frequency)
                 
-                with open("timestamp", "wt") as fp:
+                with open(filename, "wt") as fp:
                     fp.write(nexttimestamp.strftime("%s"))
 
                 return True
@@ -189,8 +198,10 @@ class background_daemon:
     """
     def _initialize_timestamp(self):
         
+        filename = resource_filename("bg_daemon", "")
+        filename = os.path.join(filename, "timestamp")
         try:
-            with open("timestamp", "wb") as fp:
+            with open(filename, "wb") as fp:
                 nexttimestamp = datetime.datetime.now() + datetime.timedelta(
                         seconds = self.frequency)
                 fp.write(nexttimestamp.strftime("%s"))

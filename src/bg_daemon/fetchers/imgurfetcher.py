@@ -2,9 +2,12 @@
 import random
 import requests
 import os
-from imgurpython import ImgurClient
-import sys
 import json
+import sys
+
+from imgurpython import ImgurClient
+from pkg_resources import Requirement, resource_filename, resource_string
+
 """
     imgurfetcher class
 
@@ -58,7 +61,10 @@ class imgurfetcher:
             
             filename: The location of the settings file.
     """
-    def __init__(self, filename = 'settings.json'):
+    def __init__(self, filename = None):
+
+        if not filename:
+            filename = resource_filename("bg_daemon", "settings.json")
 
         try:
             with open(filename) as fp:
