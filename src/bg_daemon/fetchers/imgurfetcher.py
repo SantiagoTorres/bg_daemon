@@ -4,6 +4,7 @@ import requests
 import os
 import json
 import sys
+import logging
 
 from imgurpython import ImgurClient
 from pkg_resources import Requirement, resource_filename, resource_string
@@ -62,7 +63,8 @@ class imgurfetcher:
             filename: The location of the settings file.
     """
     def __init__(self, filename = None):
-
+        
+        logger.debug("initializing fetcher")
         if not filename:
             filename = resource_filename("bg_daemon", "settings.json")
 
@@ -95,9 +97,9 @@ class imgurfetcher:
     """
     def query(self):
         
+        logging.info("Querying imgur...")
         # build our query
         query = self._build_query()
-        print query
 
         # Download gallery data
         client = ImgurClient(self.client_id, None) 
@@ -107,6 +109,8 @@ class imgurfetcher:
         # if we didn't get anything back... tough luck
         if len(data) < 1:
             return None
+
+        logging.info("Found successful query {}".format(query))
 
         return self._select_image(data)
 
@@ -127,6 +131,7 @@ class imgurfetcher:
         assert(imgobject is not None)
         assert(filename is not None)
         assert(isinstance(filename, str))
+        logging.info("Saving image {} to {}".format(imgobject.title, filename))
 
         
         req = requests.get(imgobject.link)
@@ -205,6 +210,8 @@ class imgurfetcher:
 
         return selected_image
 
+
+logger = logging.getLogger("bg_daemon")
 
 if __name__ == '__main__':
 

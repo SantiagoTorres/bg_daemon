@@ -6,8 +6,10 @@ import json
 import time
 import subprocess, shlex
 
-from bg_daemon.fetchers.imgurfetcher import imgurfetcher
 from pkg_resources import Requirement, resource_filename, resource_string
+
+from bg_daemon.fetchers.imgurfetcher import imgurfetcher
+from bg_daemon.log import logger as log
 
 """
     Background daemon.
@@ -129,19 +131,19 @@ class background_daemon:
             try:
                 shutil.copyfile(self.target, backup_target)
             except:
-                print("couldn't create backup image!")
+                log.error("couldn't create backup image!")
                 pass
    
         try:
             self.fetcher.fetch(query, self.target)
         except Exception as e:
-            print("Fetcher error, couldn't fetch image!")
+            log.error("Fetcher error, couldn't fetch image!")
             if self.backup and not os.path.isdir(self.target):
                 try:
                     shutil.copyfile(backup_target, self.target)
                     shutil.rmfile(backup_taget)
                 except:
-                    print("Couldn't load backup image!")
+                    log.error("Couldn't load backup image!")
                     pass
             else:
                 raise
@@ -161,7 +163,7 @@ class background_daemon:
         filename = resource_filename("bg_daemon", "")
         filename = os.path.join(filename, "timestamp")
 
-        print("Polling")
+        log.info("Polling")
         if os.path.exists(filename) and os.path.isfile(filename):
             with open(filename) as fp:
                 timestamp = fp.read()
@@ -169,11 +171,11 @@ class background_daemon:
             try:
                 updatedate = datetime.datetime.fromtimestamp(float(timestamp))
             except:
-                print("timestamp is corrupted!, initializing...")
+                log.error("timestamp is corrupted!, initializing...")
                 return self._initialize_datetime()
 
             if datetime.datetime.now() > updatedate:
-                print("updating")
+                log.debug("updating timestamp")
                 self.update()
                 nexttimestamp = updatedate + datetime.timedelta(
                         seconds = self.frequency)
@@ -187,7 +189,7 @@ class background_daemon:
                 return False
 
         else:
-            print("No timestamp found! initializing...")
+            log.info("No timestamp found! initializing...")
             return self._initialize_timestamp()
 
     """
