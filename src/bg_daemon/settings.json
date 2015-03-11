@@ -1,0 +1,29 @@
+{
+    "fetcher":{
+        "keywords": [ "Mexico",
+                      "mountain",
+                      "forest",
+                      "winter",
+                      "snow",
+                      "ice",
+                      "night",
+                      "moon"
+                    ],
+        
+        "subreddits": [ "earthporn"
+                    ],
+
+        "client_id":"b0d705fbff41bc1",
+        "blacklist_words":["gore"]
+    },
+    "daemon":{
+        "fetcher":"imgurfetcher",
+        "frequency":60,
+        "retries":10,
+        "slack":10,
+        "target":"/home/santiago/Documents/Backgrounds/bg.jpg",
+        "backup":"yes",
+        "update_hook":"feh --bg-fill /home/santiago/Documents/Backgrounds/bg.jpg"
+    }
+
+}
