@@ -97,7 +97,7 @@ class imgurfetcher:
     """
     def query(self):
         
-        logging.info("Querying imgur...")
+        logger.info("Querying imgur...")
         # build our query
         query = self._build_query()
 
@@ -110,7 +110,7 @@ class imgurfetcher:
         if len(data) < 1:
             return None
 
-        logging.info("Found successful query {}".format(query))
+        logger.info("Found successful query {}".format(query))
 
         return self._select_image(data)
 
@@ -131,7 +131,7 @@ class imgurfetcher:
         assert(imgobject is not None)
         assert(filename is not None)
         assert(isinstance(filename, str))
-        logging.info("Saving image {} to {}".format(imgobject.title, filename))
+        logger.info("Saving image {} to {}".format(imgobject.title, filename))
 
         
         req = requests.get(imgobject.link)
