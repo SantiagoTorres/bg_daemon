@@ -6,10 +6,9 @@ import json
 import time
 import subprocess, shlex
 
-from pkg_resources import Requirement, resource_filename, resource_string
-
 from bg_daemon.fetchers.imgurfetcher import imgurfetcher
 from bg_daemon.log import logger as log
+from bg_daemon.util import HOME
 
 """
     Background daemon.
@@ -63,7 +62,7 @@ class background_daemon:
     def __init__(self, filename = None):
 
         if not filename:
-            filename = resource_filename("bg_daemon", "settings.json")
+            filename =  os.path.join(HOME, "settings.json")
 
         try:
             with open(filename) as fp:
@@ -160,8 +159,7 @@ class background_daemon:
     """
     def poll(self):
     
-        filename = resource_filename("bg_daemon", "")
-        filename = os.path.join(filename, "timestamp")
+        filename = os.path.join(HOME, "timestamp")
 
         log.info("Polling")
         if os.path.exists(filename) and os.path.isfile(filename):
@@ -200,8 +198,7 @@ class background_daemon:
     """
     def _initialize_timestamp(self):
         
-        filename = resource_filename("bg_daemon", "")
-        filename = os.path.join(filename, "timestamp")
+        filename = os.path.join(HOME, "timestamp")
         try:
             with open(filename, "wb") as fp:
                 nexttimestamp = datetime.datetime.now() + datetime.timedelta(

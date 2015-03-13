@@ -7,7 +7,7 @@ import sys
 import logging
 
 from imgurpython import ImgurClient
-from pkg_resources import Requirement, resource_filename, resource_string
+from bg_daemon.util import HOME
 
 """
     imgurfetcher class
@@ -66,7 +66,7 @@ class imgurfetcher:
         
         logger.debug("initializing fetcher")
         if not filename:
-            filename = resource_filename("bg_daemon", "settings.json")
+            filename = os.path.join(HOME, "settings.json")
 
         try:
             with open(filename) as fp:
