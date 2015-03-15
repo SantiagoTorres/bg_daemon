@@ -16,7 +16,8 @@ import shlex
 
 from bg_daemon.fetchers.imgurfetcher import imgurfetcher
 from bg_daemon.log import logger as log
-from bg_daemon.util import HOME
+from bg_daemon.util import (HOME, initialize_default_settings,
+                            initialize_home_directory)
 
 
 class background_daemon:
@@ -67,8 +68,13 @@ class background_daemon:
     """
     def __init__(self, filename=None):
 
+        if not os.path.exists(HOME):
+            initialize_home_directory()
+
         if not filename:
             filename = os.path.join(HOME, "settings.json")
+            if not os.path.exists(filename):
+                initialize_default_settings(filename)
 
         try:
             with open(filename) as fp:

@@ -22,10 +22,11 @@
 import logging
 import os
 from pkg_resources import Requirement, resource_filename, resource_string
+from bg_daemon.util import HOME, initialize_home_directory
 
 # We set some sane defaults here, we filted differently if the logging
 # calls are meant to be to the console or somewhere else
-_BASE_PATH = resource_filename("bg_daemon", "")
+_BASE_PATH = HOME
 _DEFAULT_LOG_FILENAME = os.path.join(_BASE_PATH, "bg_daemon.log")
 _DEFAULT_LOG_LEVEL = logging.DEBUG
 _DEFAULT_CONSOLE_LOG_LEEL = logging.INFO
@@ -37,6 +38,9 @@ _FORMAT_STRING = ("[%(asctime)s] [%(name)s] [%(levelname)s]"
 formatter = logging.Formatter(_FORMAT_STRING)
 
 # define the handler, we are going to write our log to a file
+if not os.path.exists(HOME):
+    initialize_home_directory()
+
 file_handler = logging.FileHandler(_DEFAULT_LOG_FILENAME)
 file_handler.setLevel(_DEFAULT_FILE_LOG_LEVEL)
 file_handler.setFormatter(formatter)
