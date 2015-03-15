@@ -23,7 +23,8 @@
         "slack":10,
         "target":"/home/santiago/Documents/Backgrounds/bg.jpg",
         "backup":"yes",
-        "update_hook":"feh --bg-fill /home/santiago/Documents/Backgrounds/bg.jpg"
+        "update_hook":"feh --bg-fill /home/santiago/Documents/Backgrounds/bg.jpg",
+        "env":{"DISPLAY":":0"}
     }
 
 }

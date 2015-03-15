@@ -159,8 +159,10 @@ class background_daemon:
             else:
                 raise
 
-        # Run the update command
+        # Run the update command, the environment variables are overwritten
+        # in case the daemon is not in the same namespace (happens with chron)
         if self.update_hook:
+            os.environ.update(self.env)
             subprocess.call(shlex.split(self.update_hook))
 
     """
