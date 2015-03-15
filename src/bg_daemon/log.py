@@ -19,7 +19,7 @@
             log.log("message")
 
 """
-import logging 
+import logging
 import os
 from pkg_resources import Requirement, resource_filename, resource_string
 
