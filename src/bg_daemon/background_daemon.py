@@ -189,7 +189,7 @@ class background_daemon:
             if datetime.datetime.now() > updatedate:
                 log.debug("updating timestamp")
                 self.update()
-                nexttimestamp = updatedate + datetime.timedelta(
+                nexttimestamp = datetime.datetime.now() + datetime.timedelta(
                         seconds=self.frequency)
 
                 with open(filename, "wt") as fp:
