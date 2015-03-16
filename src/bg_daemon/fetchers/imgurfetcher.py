@@ -9,48 +9,51 @@ import logging
 from imgurpython import ImgurClient
 from bg_daemon.util import HOME
 
-"""
-    imgurfetcher class
 
-    Loads configuration parameters from settings.py and downloads/saves
-    images from imgur based on it.
-
-    <Properties>
-        
-        keywords: a list containing all of the special keywords, ex:
-            ['autumn', 'leaves', 'red']
-
-            This list will be randomized and permutted before querying
-
-        subreddits: a list of "keywords" from subreddits (e.g. earthporn),
-            it's used as a second filter. I don't advice using this feat yet.
-
-        client_id: you will have to set this up so the API accepts your request
-
-        min_height: use the size of your screen here, so nothing is too ugly
-
-        min_width: same idea here
-
-        max_size: if you want to save your bandwidth/disk-space
-
-        blacklist_words: a list containing words that might hint something
-            you don't want to see (e.g., you want fall season, not 'pain')
-
-    <Functions>
-        
-        query(): Finds a candidate gallery to download
-        fetch(): From the candidate, get the image data.
-"""
 class imgurfetcher:
+    """
+        imgurfetcher class
 
-    keywords        = None
-    subreddits      = None
-    client_id       = None
-    min_height      = None
-    min_width       = None
-    max_size        = None
+        Loads configuration parameters from settings.py and downloads/saves
+        images from imgur based on it.
+
+        <Properties>
+
+            keywords: a list containing all of the special keywords, ex:
+                ['autumn', 'leaves', 'red']
+
+                This list will be randomized and permutted before querying
+
+            subreddits: a list of "keywords" from subreddits (e.g. earthporn),
+                        it's used as a second filter. I don't advice using this
+                        feature yet.
+
+            client_id: you will have to set this up so the API accepts your
+                       request
+
+            min_height: use the size of your screen here, so nothing is too
+                        ugly
+
+            min_width: same idea here
+
+            max_size: if you want to save your bandwidth/disk-space
+
+            blacklist_words: a list containing words that might hint something
+                             you don't want to see (e.g., you want fall season,
+                             not 'pain')
+
+        <Functions>
+
+            query(): Finds a candidate gallery to download
+            fetch(): From the candidate, get the image data.
+    """
+    keywords = None
+    subreddits = None
+    client_id = None
+    min_height = None
+    min_width = None
+    max_size = None
     blacklist_words = None
-
 
     """
         __init__
@@ -59,11 +62,11 @@ class imgurfetcher:
         information
 
         <Arguments>
-            
+
             filename: The location of the settings file.
     """
-    def __init__(self, filename = None):
-        
+    def __init__(self, filename=None):
+
         logger.debug("initializing fetcher")
         if not filename:
             filename = os.path.join(HOME, "settings.json")
@@ -82,8 +85,6 @@ class imgurfetcher:
 
                 setattr(self, key, data['fetcher'][key])
 
-                
-
     """
         query
 
@@ -96,15 +97,15 @@ class imgurfetcher:
             An Imgur gallery object
     """
     def query(self):
-        
+
         logger.info("Querying imgur...")
         # build our query
         query = self._build_query()
 
         # Download gallery data
-        client = ImgurClient(self.client_id, None) 
+        client = ImgurClient(self.client_id, None)
         data = client.gallery_search(query, sort='time', window='month',
-                page = 0)
+                                     page=0)
 
         # if we didn't get anything back... tough luck
         if len(data) < 1:
@@ -133,14 +134,13 @@ class imgurfetcher:
         assert(isinstance(filename, str))
         logger.info("Saving image {} to {}".format(imgobject.title, filename))
 
-        
         req = requests.get(imgobject.link)
 
         # if we aren't provided an extension, we will do it for you.
         if len(os.path.splitext(filename)[1]) == 0:
             root, ext = os.path.splitext(imgobject.link)
             filename = "{}{}".format(filename, ext)
-        
+
         with open(filename, 'wb') as fp:
             for chunk in req.iter_content():
                 fp.write(chunk)
@@ -191,7 +191,7 @@ class imgurfetcher:
             return random.choice(galleries)
 
         attempts = 0
-    
+
         while not elected:
 
             selected_image = random.choice(galleries)
@@ -222,6 +222,3 @@ if __name__ == '__main__':
         print("Fetch successful!")
     else:
         print("Fetch unsuccessful! :(")
-
-
-
