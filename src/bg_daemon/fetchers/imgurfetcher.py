@@ -98,9 +98,9 @@ class imgurfetcher:
     """
     def query(self):
 
-        logger.info("Querying imgur...")
         # build our query
         query = self._build_query()
+        logger.info("Querying imgur with {}".format(query))
 
         # Download gallery data
         client = ImgurClient(self.client_id, None)
