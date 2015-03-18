@@ -13,7 +13,6 @@
         "subreddits": [ "earthporn"
                     ],
 
-        "client_id":"b0d705fbff41bc1",
         "blacklist_words":["gore"]
     },
     "daemon":{

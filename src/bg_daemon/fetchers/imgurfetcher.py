@@ -9,6 +9,8 @@ import logging
 from imgurpython import ImgurClient
 from bg_daemon.util import HOME
 
+CLIENT_ID = "b0d705fbff41bc1"
+
 
 class imgurfetcher:
     """
@@ -84,6 +86,10 @@ class imgurfetcher:
                     raise Exception("The settings file is corrupted!")
 
                 setattr(self, key, data['fetcher'][key])
+
+        # we are hardcoding this value since we don't expect it to change too
+        # much
+        self.client_id = CLIENT_ID
 
     """
         query
@@ -198,6 +204,12 @@ class imgurfetcher:
             attempts += 1
             if attempts > 30:
                 return None
+
+            if selected_image.width < self.min_width:
+                continue
+
+            if selected_image.height < self.min_height:
+                continue
 
             for word in self.blacklist_words:
                 if word in selected_image.title:
