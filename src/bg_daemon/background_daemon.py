@@ -17,7 +17,7 @@ import shlex
 from bg_daemon.fetchers.imgurfetcher import imgurfetcher
 from bg_daemon.log import logger as log
 from bg_daemon.util import (HOME, initialize_default_settings,
-                            initialize_home_directory)
+                            initialize_home_directory, get_digest_for_file)
 
 
 class background_daemon:
@@ -136,14 +136,18 @@ class background_daemon:
             return None
 
         if self.backup and not os.path.isdir(self.target):
-            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-            backup_target = "{}.{}".format(self.target, timestamp)
 
-            try:
-                shutil.copyfile(self.target, backup_target)
-            except:
-                log.error("couldn't create backup image!")
-                pass
+            digest = get_digest_for_file(self.target)
+            name, ext = os.path.splitext(self.target)
+            backup_target = "{}-{}.{}".format(name, digest, ext)
+
+            # we will only backup if it's not there yet
+            if not os.path.exists(backup_target):
+                try:
+                    shutil.copyfile(self.target, backup_target)
+                except:
+                    log.error("couldn't create backup image!")
+                    pass
 
         try:
             self.fetcher.fetch(query, self.target)

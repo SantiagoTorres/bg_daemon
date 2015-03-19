@@ -4,8 +4,6 @@ reminder but also as an invitation for anyone interested.
 * fetcher classes should have a superclass defining the whole interface 
 * the daemon class can work as a chronjob or as a standalone daemon, implement
     such daemonization method.
-* The backup method could be better implemented... maybe obtain a hash-prefix
-    so new files are not overwritten
 * It could be good if a database regarding the images is being compiled.
 * setup.py could be smarter
 * Maybe add a new method to initialize the daemon as a job (add init.d files
