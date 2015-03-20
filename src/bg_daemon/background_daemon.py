@@ -139,7 +139,7 @@ class background_daemon:
 
             digest = get_digest_for_file(self.target)
             name, ext = os.path.splitext(self.target)
-            backup_target = "{}-{}.{}".format(name, digest, ext)
+            backup_target = "{}-{}{}".format(name, digest, ext)
 
             # we will only backup if it's not there yet
             if not os.path.exists(backup_target):
