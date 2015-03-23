@@ -44,6 +44,11 @@ class imgurfetcher:
                              you don't want to see (e.g., you want fall season,
                              not 'pain')
 
+            mode: either "recent" or "keywords". Recent will get the most
+                  recent image in the subreddit, while keywords will filter
+                  and randomly select an image in it. If mode is not either,
+                  it will default to recent.
+
         <Functions>
 
             query(): Finds a candidate gallery to download
@@ -56,6 +61,7 @@ class imgurfetcher:
     min_width = None
     max_size = None
     blacklist_words = None
+    mode = None
 
     """
         __init__
@@ -86,6 +92,9 @@ class imgurfetcher:
                     raise Exception("The settings file is corrupted!")
 
                 setattr(self, key, data['fetcher'][key])
+
+        if self.mode != 'keywords' and self.mode != 'recent':
+            self.mode = 'recent'
 
         # we are hardcoding this value since we don't expect it to change too
         # much
@@ -171,10 +180,16 @@ class imgurfetcher:
             assert(isinstance(self.subreddits, list))
             subreddit = random.choice(self.subreddits)
 
-        # get a random number of keywords and build a query
-        number_of_keywords = random.randint(1, 2)
-        random.shuffle(self.keywords)
-        keywords = self.keywords[:number_of_keywords]
+        if self.mode == 'keywords':
+            # get a random number of keywords and build a query
+            number_of_keywords = random.randint(1, 2)
+            random.shuffle(self.keywords)
+            keywords = self.keywords[:number_of_keywords]
+
+        # we are in the "recent" mode
+        else:
+            keywords = []
+
         query = ''
         for keyword in keywords:
             query += "{} ".format(keyword)
@@ -199,8 +214,15 @@ class imgurfetcher:
         attempts = 0
 
         while not elected:
+        
+            if self.mode == "keywords":
+                selected_image = random.choice(galleries)
+            else:
+                try:
+                    selected_image = galleries.pop(0)
+                except IndexError:
+                    return None
 
-            selected_image = random.choice(galleries)
             attempts += 1
             if attempts > 30:
                 return None

@@ -13,7 +13,8 @@
         "subreddits": [ "earthporn"
                     ],
 
-        "blacklist_words":["gore"]
+        "blacklist_words":["gore"],
+        "mode":"recent"
     },
     "daemon":{
         "fetcher":"imgurfetcher",
