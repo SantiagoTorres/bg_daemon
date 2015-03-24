@@ -8,3 +8,5 @@ reminder but also as an invitation for anyone interested.
 * setup.py could be smarter
 * Maybe add a new method to initialize the daemon as a job (add init.d files
     and everything related to the OS).
+* Move the settings.json files and any helper scripts outside of the main
+  folder
