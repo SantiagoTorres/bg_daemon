@@ -32,7 +32,7 @@ def initialize_default_settings(filename):
     shutil.copy(settings_location, filename)
 
     with open(filename) as fp:
-        settings_template = read(fp)
+        settings_template = json.load(fp)
 
     new_settings = set_default_settings(settings_template)
 
@@ -126,7 +126,7 @@ def set_default_settings(settings):
 
         update_script = os.path.join(PKG_LOCATION, 'mac-update.sh')
         update_script_target = os.path.join(HOME, 'mac-update.sh')
-        shutil.copy(update_script, update_script_target))
+        shutil.copy(update_script, update_script_target)
         daemon['update_hook'] = "bash {} {}".format(update_script_target,
                                                     daemon['target'])
 
