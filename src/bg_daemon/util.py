@@ -5,14 +5,17 @@
     This module's purpose is to serve as a centralized location for
     different constant and methods that don't fit anywhere else
 """
+import sys
 import os
 import shutil
+import json
 from hashlib import sha256
 from pkg_resources import Requirement, resource_filename, resource_string
 
 # for package-specific locations, change this value (your home folder might be
 # ideal for this)
 HOME = os.path.join(os.path.expanduser("~"), ".bg_daemon")
+DEFAULT_IMAGE = "bg.jpg"
 PKG_LOCATION = resource_filename("bg_daemon", "")
 DIGEST_LENGTH = 10
 
@@ -22,11 +25,19 @@ def initialize_default_settings(filename):
         initialize_default_settings
 
         If copies the default settings file from the package location into
-        the home folder
+        the home folder, and updates values if needed
     """
     settings_location = os.path.join(PKG_LOCATION, "settings.json")
 
     shutil.copy(settings_location, filename)
+
+    with open(filename) as fp:
+        settings_template = read(fp)
+
+    new_settings = set_default_settings(settings_template)
+
+    with open(filename, 'wt') as fp:
+        json.dump(new_settings)
 
     return
 
@@ -44,6 +55,7 @@ def initialize_home_directory():
     os.mkdir(HOME, 0770)
 
     settings_file = os.path.join(HOME, "settings.json")
+
     initialize_default_settings(settings_file)
 
     return
@@ -88,5 +100,35 @@ def hexify(byte_array):
     """
     return "".join("{:02x}".format(ord(c)) for c in byte_array)
 
+def set_default_settings(settings):
+    """ 
+        set_default_setings:
+
+        loads the template file and updates the values with a sane default.
+        adds platform specific hooks and whatnot.
+
+        arguments:
+
+            settings: a json dictionary containing the settings template
+
+        output:
+            
+            the new settings dictionary, ready to be saved.
+    """
+    assert('daemon' in settings)
+
+    daemon = settings['daemon']
+
+    daemon['target'] = os.path.join(HOME, DEFAULT_IMAGE)
+    # check if we need to make any mac specific checks
+    if sys.platform == 'darwin':
 
 
+        update_script = os.path.join(PKG_LOCATION, 'mac-update.sh')
+        update_script_target = os.path.join(HOME, 'mac-update.sh')
+        shutil.copy(update_script, update_script_target))
+        daemon['update_hook'] = "bash {} {}".format(update_script_target,
+                                                    daemon['target'])
+
+    settings['daemon'] = daemon
+    return settings['daemon']
