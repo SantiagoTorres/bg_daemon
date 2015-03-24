@@ -101,9 +101,7 @@ default values*.
 
 #### Target
 
-In simple words, where do you want to save this.
-
-*It defaults to my location, so be sure to change this!*
+In simple words, where do you want to save this. It defaults to $HOME/.bg\_daemon/bg.jpg
 
 #### Backup
 
