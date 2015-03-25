@@ -21,7 +21,8 @@ setup(
                    "bg_daemon.fetchers": "src/bg_daemon/fetchers"},
     scripts = ["src/bg_daemon/background_daemon.py"],
     include_package_data = True,
-    data_files = [('bg_daemon', ['src/bg_daemon/settings.json'])],
+    data_files = [('bg_daemon', ['src/bg_daemon/settings.json',
+                                 'src/bg_daemon/mac-update.sh'])],
     long_description = read("README.md"),
     classifiers = [
         "Development Status :: 2 - Pre-Alpha",
