@@ -9,6 +9,7 @@ import sys
 import os
 import shutil
 import json
+import crontab
 from hashlib import sha256
 from pkg_resources import Requirement, resource_filename, resource_string
 
@@ -18,6 +19,9 @@ HOME = os.path.join(os.path.expanduser("~"), ".bg_daemon")
 DEFAULT_IMAGE = "bg.jpg"
 PKG_LOCATION = resource_filename("bg_daemon", "")
 DIGEST_LENGTH = 10
+STDOUT_RELOCATION = os.path.join(HOME, "output.log")
+DEFAULT_COMMAND = ("/usr/local/bin/background_daemon.py "
+                   ">> {}".format(STDOUT_RELOCATION))
 
 
 def initialize_default_settings(filename):
@@ -37,7 +41,7 @@ def initialize_default_settings(filename):
     new_settings = set_default_settings(settings_template)
 
     with open(filename, 'wt') as fp:
-        json.dump(new_settings)
+        json.dump(new_settings, fp)
 
     return
 
@@ -132,3 +136,108 @@ def set_default_settings(settings):
 
     settings['daemon'] = daemon
     return settings['daemon']
+
+def add_crontab_entry(days = None, hours = None, minutes = 5):
+    """
+        add_crontab_entry:
+
+        adds a crontab entry to call the daemon every day, hour, and minute
+        that's specified as an argument
+
+        input:
+            days: each [days] days this job will be executed
+
+            hours: each [hours] hours this job will be executed
+
+            minutes: each [minutes] minutes this job will be executes
+
+        output:
+
+            the resulting crontab
+
+        side-effects:
+            
+            the user's crontab entry will be modified with the corresponding 
+            cronjob
+
+    """
+    tab = crontab.CronTab(user=True)
+
+    # verify that we haven't populated the crontab yet
+    if _is_crontab_populated(tab):
+        return tab
+
+    new_job = tab.new(command=DEFAULT_COMMAND)
+    
+    if days:
+        new_job.day.every(days)
+
+    if hours:
+        new_job.hour.every(hours)
+
+    if minutes:
+        new_job.minutes.every(minutes)
+
+    new_job.set_comment("Background daemon")
+
+    if not new_job.is_valid():
+        raise Exception("couldn't create job!")
+
+    tab.write_to_user(user=True)
+
+    return tab
+
+
+def remove_crontab_entry():
+    """
+        remove_crontab_entry:
+
+        removes the background_daemon entry in the crontab
+
+        input:
+            Nothing
+
+        output:
+            
+            the resulting crontab
+
+        side-effects
+            
+            the bg_daemon entry in the crontab will be removed
+    """
+    tab = crontab.CronTab(user = True)
+
+    jobs = [x for x in tab.find_command("background_daemon.py")]
+
+    if len(jobs) == 0:
+        return tab
+
+    for job in jobs:
+        if job.command == (DEFAULT_COMMAND):
+            tab.remove(job)
+
+    tab.write_to_user(user=True)
+    return tab
+
+
+def _is_crontab_populated(cron):
+    """
+        _is_crontab_populated:
+
+        checks in the crontab already contains the background_daemon entry
+
+        returns:
+            True if the entry is already there
+            False if the entry is not there
+
+    """
+    jobs = [x for x in cron.find_command("background_daemon.py")]
+
+    if len(jobs) == 0:
+        return False
+
+    for job in jobs:
+        if job.command.startswith("/usr/local/bin/background_daemon.py"):
+            return True
+
+    return False

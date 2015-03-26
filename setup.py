@@ -37,6 +37,7 @@ setup(
     install_requires = [
         "imgurpython",
         "requests",
+        "python-crontab",
         ],
 )
 
