@@ -135,7 +135,8 @@ class background_daemon:
         if query is None:
             return None
 
-        if self.backup and not os.path.isdir(self.target):
+        if (self.backup and not os.path.isdir(self.target) and
+                os.path.exists(self.target)):
 
             digest = get_digest_for_file(self.target)
             name, ext = os.path.splitext(self.target)
