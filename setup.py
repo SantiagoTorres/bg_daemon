@@ -24,7 +24,6 @@ class install(_install):
         from bg_daemon.util import (add_crontab_entry,
                                     initialize_home_directory)
 
-        initialize_home_directory()
         add_crontab_entry()
 
 
