@@ -58,6 +58,14 @@ def initialize_home_directory():
 
     os.mkdir(HOME, 0770)
 
+    # some sudo calls change the euid, uid and ruid to 0, which might not be
+    # accessible later when running as a user process. This, for some reason
+    # happens on certain MacOS systems
+    if "SUDO_UID" in os.environ:
+        uid = int(os.environ["SUDO_UID"])
+        gid = int(os.environ["SUDO_GID"])
+        os.lchown(HOME, uid, gid)
+
     settings_file = os.path.join(HOME, "settings.json")
 
     initialize_default_settings(settings_file)
@@ -103,6 +111,7 @@ def hexify(byte_array):
             the hex representation of the byte array in a string
     """
     return "".join("{:02x}".format(ord(c)) for c in byte_array)
+
 
 def set_default_settings(settings):
     """ 
