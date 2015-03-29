@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 osascript<<EOF
-tell applcation "Finder"
+tell application "Finder"
     set desktop picture to POSIX file "$1"
 end tell
 EOF
