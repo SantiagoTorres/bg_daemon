@@ -18,10 +18,6 @@ from pkg_resources import Requirement, resource_filename, resource_string
 HOME = os.path.join(os.path.expanduser("~"), ".bg_daemon")
 DEFAULT_IMAGE = "bg.jpg"
 PKG_LOCATION = resource_filename("bg_daemon", "")
-SETTINGS_LOCATION = resource_filename(Requirement.parse("bg_daemon"), 
-                                      "settings.json")
-MAC_OS_SCRIPT_LOCATION = resource_filename(Requirement.parse("bg_daemon"),
-                                           "mac-update.sh")
 DIGEST_LENGTH = 10
 STDOUT_RELOCATION = os.path.join(HOME, "output.log")
 DEFAULT_COMMAND = ("/usr/local/bin/background_daemon.py "
@@ -141,7 +137,7 @@ def set_default_settings(settings):
     if sys.platform == 'darwin':
 
 
-        update_script = MAC_OS_SCRIPT_LOCATION 
+        update_script = os.path.join(PKG_LOCATION, 'mac-update.sh')
         update_script_target = os.path.join(HOME, 'mac-update.sh')
         shutil.copy(update_script, update_script_target)
         daemon['update_hook'] = "bash {} {}".format(update_script_target,
