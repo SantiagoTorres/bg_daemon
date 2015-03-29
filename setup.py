@@ -2,33 +2,13 @@
 
 import os
 from setuptools import setup
-from setuptools.command.install import install as _install
-from subprocess import call
 
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 
-class install(_install):
-    """
-        install
-
-        Custom wrapper that sets up the crontab and home folders
-
-    """
-    def run(self):
-        call(["pip install -r requirements.txt"], shell=True)
-        _install.run(self)
-
-        from bg_daemon.util import (add_crontab_entry,
-                                    initialize_home_directory)
-
-        add_crontab_entry()
-
-
 setup(
-    cmdclass={'install': install},
     name="bg_daemon",
     version="0.0.1",
     author="Santiago Torres",
