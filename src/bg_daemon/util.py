@@ -148,7 +148,7 @@ def set_default_settings(settings):
                                                     daemon['target'])
 
     settings['daemon'] = daemon
-    return settings['daemon']
+    return settings
 
 def add_crontab_entry(days = None, hours = None, minutes = 5):
     """
