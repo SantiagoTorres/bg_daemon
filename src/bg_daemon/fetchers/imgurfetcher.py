@@ -147,7 +147,10 @@ class imgurfetcher:
         assert(imgobject is not None)
         assert(filename is not None)
         assert(isinstance(filename, str))
-        logger.info("Saving image {} to {}".format(imgobject.title, filename))
+
+        # title will be changed to ascii before saving
+        title = imbobject.title.encode('ascii', 'replace')
+        logger.info("Saving image {} to {}".format(title, filename))
 
         req = requests.get(imgobject.link)
 
