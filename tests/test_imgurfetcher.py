@@ -11,6 +11,7 @@ import random
 
 NUMBER_OF_IMAGES = 5
 
+
 class test_imgurfetcher(unittest.TestCase):
 
     fetcher = None
@@ -22,10 +23,10 @@ class test_imgurfetcher(unittest.TestCase):
 
         for i in range(NUMBER_OF_IMAGES):
             self.gallery.append(imgurpython.helpers.GalleryImage(
-                link = self._generate_title(),
-                title = self._generate_title(),
-                width = random.randint(100, 10000),
-                height = random.randint(100, 10000)))
+                link=self._generate_title(),
+                title=self._generate_title(),
+                width=random.randint(100, 10000),
+                height=random.randint(100, 10000)))
 
     def tearDown(self):
         pass
@@ -93,7 +94,6 @@ class test_imgurfetcher(unittest.TestCase):
         for word in selected.title.strip().split(" "):
             self.assertTrue(word not in self.fetcher.blacklist_words)
 
-
     def _generate_title(self):
 
         with_blacklist = True if random.random() > .6 else False
@@ -113,9 +113,6 @@ class test_imgurfetcher(unittest.TestCase):
             keywords += "{} ".format(random.choice(self.fetcher.keywords))
 
         return "{} {} {}".format(blacklist, sub, keywords)
-
-
-
 
 
 if __name__ == '__main__':
