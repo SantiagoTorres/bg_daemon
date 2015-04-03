@@ -1,37 +1,34 @@
 # bg\_daemon
-An extensible python set of classes to update your background images. 
+An extensible python set of classes to update your background images.
 
 *Consider that this is not fully tested yet, if you encounter anything
 unexpected please let me know*
 
 # Installation
 
-Right now, you can simply run 
+Right now, you can simply run
 
 ```Bash
-$ sudo ./setup.py install 
+$ sudo ./setup.py install
 ```
 
-Once the installation is done, you must add a cronjob:
+Once the installation is done, you must add a cronjob. As of this time, I'm
+working in an out of the box way to add a cronjob, in the meantime, you can
+do the following from a python shell:
 
-```Bash
-$ crontab -e 
+```python
+>>> import bg_daemon.util
+>>> bg_daemon.util.add_crontab_entry()
 ```
 
-You should add an entry that looks similar to:
+That's it, now it's installed.
 
-```crontab
-*/5 * * * * /usr/local/bin/background_daemon.py 
-```
-
-This basically runs the poll command every five minutes, but that doesn't mean
-that the background will change every five minutes.
 
 ## Configuration
 
-The very first time that "background\_daemon.py" is called, it creates a 
+The very first time that "background\_daemon.py" is called, it creates a
 directory in your home called ".bg\_daemon". Inside it, you will find the
-settings.json file. You can edit this file to modify the behavior of the 
+settings.json file. You can edit this file to modify the behavior of the
 daemon.
 
 ### Setting up the fetcher
@@ -71,7 +68,7 @@ You can set a minimum size constraint so the images have a proper resoltuion.
 #### blacklist\_words
 
 You can set a list of values that you do not want to appear in the title,
-or description of the image. Imgur can host some really nasty things, so 
+or description of the image. Imgur can host some really nasty things, so
 this seems to be a required feature.
 
 
