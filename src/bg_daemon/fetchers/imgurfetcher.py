@@ -149,7 +149,7 @@ class imgurfetcher:
         assert(isinstance(filename, str))
 
         # title will be changed to ascii before saving
-        title = imbobject.title.encode('ascii', 'replace')
+        title = imgobject.title.encode('ascii', 'replace')
         logger.info("Saving image {} to {}".format(title, filename))
 
         req = requests.get(imgobject.link)
@@ -217,7 +217,7 @@ class imgurfetcher:
         attempts = 0
 
         while not elected:
-        
+
             if self.mode == "keywords":
                 selected_image = random.choice(galleries)
             else:
