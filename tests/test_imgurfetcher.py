@@ -8,6 +8,7 @@ import unittest
 import bg_daemon.fetchers.imgurfetcher as imgurfetcher
 import imgurpython
 import random
+import os
 
 NUMBER_OF_IMAGES = 5
 
@@ -18,7 +19,9 @@ class test_imgurfetcher(unittest.TestCase):
     gallery = None
 
     def setUp(self):
-        self.fetcher = imgurfetcher.imgurfetcher()
+
+        settings_path = os.path.join(os.getcwd(), "tests",  "settings.json")
+        self.fetcher = imgurfetcher.imgurfetcher(settings_path)
         self.gallery = []
 
         for i in range(NUMBER_OF_IMAGES):
