@@ -10,7 +10,7 @@ import imgurpython
 import random
 import os
 
-NUMBER_OF_IMAGES = 5
+NUMBER_OF_IMAGES = 500
 
 
 class test_imgurfetcher(unittest.TestCase):
