@@ -1,6 +1,8 @@
 # bg\_daemon
 An extensible python set of classes to update your background images.
 
+[![Build Status](https://travis-ci.org/SantiagoTorres/bg_daemon.svg?branch=master)](https://travis-ci.org/SantiagoTorres/bg_daemon)
+
 *Consider that this is not fully tested yet, if you encounter anything
 unexpected please let me know*
 
