@@ -9,11 +9,14 @@ from sys import platform, argv
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+SCRIPTS = ["src/bg_daemon/background_daemon.py"]
+
 # only compile quack when none of these options are chosen
 if (all([e not in argv for e in ['egg_info', 'sdist', 'register']]) and
     platform == 'darwin'):
     try:
         call(['make', '-C', 'src/bg_daemon/'])
+        SCRIPTS.append("src/bg_daemon/quack")
     except OSError as e:
         print "Can't compile quack, reason {}".format(str(e))
 
@@ -31,7 +34,7 @@ setup(
     packages=["bg_daemon", "bg_daemon.fetchers"],
     package_dir={"bg_daemon": "src/bg_daemon",
                  "bg_daemon.fetchers": "src/bg_daemon/fetchers"},
-    scripts=["src/bg_daemon/background_daemon.py", "src/bg_daemon/quack"],
+    scripts=SCRIPTS,
     include_package_data=True,
     data_files=[('bg_daemon', ['src/bg_daemon/settings.json',
                                'src/bg_daemon/mac-update.sh'])],

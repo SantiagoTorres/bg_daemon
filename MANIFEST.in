@@ -1,9 +1,11 @@
 include README.md
 include LICENSE
-include tod.ini
+include tox.ini
+include src/bg_daemon/Makefile
 
 recursive-include src/bg_daemon *.py
 recursive-include src/bg_daemon *.c
+recursive-include src/bg_daemon *.m
 recursive-include src/bg_daemon *.sh
 recursive-include src/bg_daemon *.json
 recursive-include tests *.py
