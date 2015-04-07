@@ -14,18 +14,6 @@ from mock import patch
 
 NUMBER_OF_IMAGES = 500
 
-class mock_client:
-
-    data = {}
-
-    def __init__(self, client_id, client_secret, orig_instance):
-        """
-            empty initializer, just meant to replace the default init method
-        """
-        self.data = (client_id, client_secret, orig_instance)
-
-def ret_mock_client(self, client_id, client_secret):
-    return mock_client.__init__(client_id, client_secret, orig_instance)
 
 class test_imgurfetcher(unittest.TestCase):
 
@@ -119,7 +107,8 @@ class test_imgurfetcher(unittest.TestCase):
         for word in selected.title.strip().split(" "):
             self.assertTrue(word not in self.fetcher.blacklist_words)
 
-        with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as mock_class:
+        with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
+                mock_class:
 
             mock_method = mock_class.return_value.get_album_images
             mock_method.return_value = self.gallery
@@ -129,13 +118,10 @@ class test_imgurfetcher(unittest.TestCase):
             mock_method.assert_called_once_with(self.album.id)
             self.assertTrue(result == self.gallery[0])
 
-
-
     """
     Tests for input sanity and proper output on the galleryAlbum helper.
     """
     def test_get_image_from_album(self):
-
 
         with self.assertRaises(AssertionError):
             self.fetcher._get_image_from_album(None)
@@ -143,7 +129,8 @@ class test_imgurfetcher(unittest.TestCase):
         with self.assertRaises(AssertionError):
             self.fetcher._get_image_from_album(self.gallery[0])
 
-        with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as mock_class:
+        with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
+                mock_class:
 
             mock_method = mock_class.return_value.get_album_images
             mock_method.return_value = self.gallery
@@ -152,7 +139,6 @@ class test_imgurfetcher(unittest.TestCase):
 
             mock_method.assert_called_once_with(self.album.id)
             self.assertTrue(result == self.gallery[0])
-
 
     def _generate_title(self):
 

@@ -280,7 +280,6 @@ class imgurfetcher:
         return None
 
 
-
 logger = logging.getLogger("bg_daemon")
 
 if __name__ == '__main__':
