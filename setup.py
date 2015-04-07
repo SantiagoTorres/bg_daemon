@@ -53,5 +53,6 @@ setup(
         "imgurpython",
         "requests",
         "python-crontab",
+        "mock",
         ],
 )
