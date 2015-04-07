@@ -120,7 +120,7 @@ class imgurfetcher:
 
         # Download gallery data
         client = ImgurClient(self.client_id, None)
-        data = client.gallery_search(query, sort='time', window='month',
+        data = client.gallery_search(query, sort='time', window='year',
                                      page=0)
 
         # if we didn't get anything back... tough luck
@@ -217,6 +217,8 @@ class imgurfetcher:
 
         while not elected:
 
+            logger.debug("Selecting image...")
+
             if self.mode == "keywords":
                 selected_image = random.choice(galleries)
             else:
@@ -232,14 +234,17 @@ class imgurfetcher:
                 if selected_image is None:
                     continue
 
+            logger.debug("Selecting Image {}".format(selected_image.title))
             attempts += 1
             if attempts > 30:
                 return None
 
             if selected_image.width < self.min_width:
+                logger.debug("Rejecting due to width...")
                 continue
 
             if selected_image.height < self.min_height:
+                logger.debug("Rejecting due to height...")
                 continue
 
             bad_title = False
@@ -249,14 +254,18 @@ class imgurfetcher:
                         bad_title = True
                         break
 
-                    if word in selected_image.description:
-                        bad_title = True
-                        break
+                    if selected_image.description is not None:
+                        if word in selected_image.description:
+                            bad_title = True
+                            break
 
             if bad_title:
+                logger.debug("Rejecting due to blacklist_words...")
                 continue
 
             elected = True
+
+        logger.debug("selected image {}".format(selected_image))
 
         return selected_image
 
