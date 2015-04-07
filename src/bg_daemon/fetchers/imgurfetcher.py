@@ -229,6 +229,8 @@ class imgurfetcher:
             # the album
             if isinstance(selected_image, GalleryAlbum):
                 selected_image = self._get_image_from_album(selected_image)
+                if selected_image is None:
+                    continue
 
             attempts += 1
             if attempts > 30:
