@@ -7,6 +7,7 @@ import sys
 import logging
 
 from imgurpython import ImgurClient
+from imgurpython.helpers import GalleryAlbum, GalleryImage
 from bg_daemon.util import HOME
 
 CLIENT_ID = "b0d705fbff41bc1"
@@ -211,8 +212,6 @@ class imgurfetcher:
 
         # Try to pick an image in the gallery
         elected = False
-        if self.blacklist_words is None:
-            return random.choice(galleries)
 
         attempts = 0
 
@@ -226,6 +225,11 @@ class imgurfetcher:
                 except IndexError:
                     return None
 
+            # if the "image" is actually an album, get the topmost image from
+            # the album
+            if isinstance(selected_image, GalleryAlbum):
+                selected_image = self._get_image_from_album(selected_image)
+
             attempts += 1
             if attempts > 30:
                 return None
@@ -236,16 +240,45 @@ class imgurfetcher:
             if selected_image.height < self.min_height:
                 continue
 
-            for word in self.blacklist_words:
-                if word in selected_image.title:
-                    continue
+            bad_title = False
+            if self.blacklist_words is not None:
+                for word in self.blacklist_words:
+                    if word in selected_image.title:
+                        bad_title = True
+                        break
 
-                if word in selected_image.title:
-                    continue
+                    if word in selected_image.description:
+                        bad_title = True
+                        break
 
-                elected = True
+            if bad_title:
+                continue
+
+            elected = True
 
         return selected_image
+
+    """
+        _get_image_from_album
+
+        If the query results in an album, get an image from it.
+    """
+    def _get_image_from_album(self, album):
+
+        assert(isinstance(album, GalleryAlbum))
+
+        # Download gallery data
+        client = ImgurClient(self.client_id, None)
+        album_id = album.id
+
+        images = client.get_album_images(album_id)
+
+        # return the top-level image from the album
+        if images is not None:
+            return images[0]
+
+        return None
+
 
 
 logger = logging.getLogger("bg_daemon")
