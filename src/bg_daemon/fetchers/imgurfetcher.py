@@ -247,21 +247,21 @@ class imgurfetcher:
                 logger.debug("Rejecting due to height...")
                 continue
 
-            bad_title = False
             if self.blacklist_words is not None:
-                for word in self.blacklist_words:
-                    if word in selected_image.title:
-                        bad_title = True
-                        break
 
-                    if selected_image.description is not None and\
-                        word in selected_image.description:
-                            bad_title = True
-                            break
+                blacklist_words = set(self.blacklist_words)
+                title = set(selected_image.title.split())
 
-            if bad_title:
-                logger.debug("Rejecting due to blacklist_words...")
-                continue
+                if len(blacklist_words.intersection(title)) > 0:
+
+                    logger.debug("Rejecting due to blacklist_words...")
+                    continue
+
+                if selected_image.description is not None:
+                    description = set(selected_image.description.split())
+                    if len(blacklist_words.intersection(description)) > 0:
+                        logger.debug("Rejecting due to blacklist_words...")
+                        continue
 
             elected = True
 
