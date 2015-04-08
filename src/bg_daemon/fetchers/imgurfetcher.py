@@ -254,8 +254,8 @@ class imgurfetcher:
                         bad_title = True
                         break
 
-                    if selected_image.description is not None:
-                        if word in selected_image.description:
+                    if selected_image.description is not None and\
+                        word in selected_image.description:
                             bad_title = True
                             break
 
@@ -286,7 +286,7 @@ class imgurfetcher:
 
         # return the top-level image from the album
         if images is not None:
-            return images[0]
+            return self._select_image(images)
 
         return None
 
