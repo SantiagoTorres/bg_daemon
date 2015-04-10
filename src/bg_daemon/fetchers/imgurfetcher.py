@@ -145,9 +145,14 @@ class imgurfetcher:
     """
     def fetch(self, imgobject, filename):
 
-        assert(imgobject is not None)
-        assert(filename is not None)
-        assert(isinstance(filename, str))
+        if imgobject is None:
+            raise ValueError("ImgObject wasn't initialized properly!")
+
+        if filename is None:
+            raise ValueError("filename wasn't initialized properly!")
+
+        if not isinstance(filename, str):
+            raise ValueError("filename should be a string!")
 
         # title will be changed to ascii before saving
         title = imgobject.title.encode('ascii', 'replace')
@@ -276,7 +281,9 @@ class imgurfetcher:
     """
     def _get_image_from_album(self, album):
 
-        assert(isinstance(album, GalleryAlbum))
+        if not isinstance(album, GalleryAlbum):
+            raise ValueError(("_get_image_from_album: album should be "
+                              "a GalleryAlbum instance!"))
 
         # Download gallery data
         client = ImgurClient(self.client_id, None)
