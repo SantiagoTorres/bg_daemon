@@ -127,10 +127,10 @@ class test_imgurfetcher(unittest.TestCase):
     """
     def test_get_image_from_album(self):
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             self.fetcher._get_image_from_album(None)
 
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(ValueError):
             self.fetcher._get_image_from_album(self.gallery[0])
 
         with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
