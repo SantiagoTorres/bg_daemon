@@ -257,14 +257,14 @@ class imgurfetcher:
                 blacklist_words = set(self.blacklist_words)
                 title = set(selected_image.title.split())
 
-                if len(blacklist_words.intersection(title)) > 0:
+                if len(blacklist_words.intersection(title)):
 
                     logger.debug("Rejecting due to blacklist_words...")
                     continue
 
                 if selected_image.description is not None:
                     description = set(selected_image.description.split())
-                    if len(blacklist_words.intersection(description)) > 0:
+                    if len(blacklist_words.intersection(description)):
                         logger.debug("Rejecting due to blacklist_words...")
                         continue
 
