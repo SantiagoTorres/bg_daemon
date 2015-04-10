@@ -232,8 +232,8 @@ class imgurfetcher:
                 except IndexError:
                     return None
 
-            # if the "image" is actually an album, get the topmost image from
-            # the album
+            # if the "image" is actually an album, try to get a valid candidate
+            # image from it.
             if isinstance(selected_image, GalleryAlbum):
                 selected_image = self._get_image_from_album(selected_image)
                 if selected_image is None:
@@ -270,7 +270,7 @@ class imgurfetcher:
 
             elected = True
 
-        logger.debug("selected image {}".format(selected_image))
+        logger.debug("Selected image {}".format(selected_image))
 
         return selected_image
 
@@ -291,7 +291,8 @@ class imgurfetcher:
 
         images = client.get_album_images(album_id)
 
-        # return the top-level image from the album
+        # Try to select an appropriate image from this album, return the
+        # first one that fits our criteria.
         if images is not None:
             return self._select_image(images)
 
