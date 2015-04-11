@@ -168,7 +168,7 @@ class test_imgurfetcher(unittest.TestCase):
             mock_method.return_value = corrupted_json
 
             with self.assertRaises(ValueError):
-                dummy_fetcher = imgurfetcher.imgurfetcher(None)
+                dummy_fetcher = imgurfetcher.imgurfetcher(self.settings_path)
 
         # test for a "recent" mode fallback when initializing
         with patch("bg_daemon.fetchers.imgurfetcher.json.load") as mock_method:
@@ -176,13 +176,13 @@ class test_imgurfetcher(unittest.TestCase):
             corrupted_json = {"fetcher":{"mode":"nonexistent"}}
             mock_method.return_value = corrupted_json
 
-            dummy_fetcher = imgurfetcher.imgurfetcher()
+            dummy_fetcher = imgurfetcher.imgurfetcher(self.settings_path)
             self.assertTrue(getattr(dummy_fetcher, "mode") is "recent")
 
             corrupted_json = {"fetcher":{"mode":None}}
             mock_method.return_value = corrupted_json
 
-            dummy_fetcher = imgurfetcher.imgurfetcher()
+            dummy_fetcher = imgurfetcher.imgurfetcher(self.settings_path)
             self.assertTrue(getattr(dummy_fetcher, "mode") is "recent")
 
 
