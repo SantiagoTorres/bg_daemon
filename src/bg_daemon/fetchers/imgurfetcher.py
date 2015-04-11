@@ -282,8 +282,8 @@ class imgurfetcher:
     def _get_image_from_album(self, album):
 
         if not isinstance(album, GalleryAlbum):
-            raise ValueError(("_get_image_from_album: album should be "
-                              "a GalleryAlbum instance!"))
+            raise ValueError("_get_image_from_album: album should be "
+                             "a GalleryAlbum instance!")
 
         # Download gallery data
         client = ImgurClient(self.client_id, None)
