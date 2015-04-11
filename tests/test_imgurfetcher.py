@@ -21,11 +21,13 @@ class test_imgurfetcher(unittest.TestCase):
     gallery = None
     albums = None
     mock_client = None
+    settings_path = None
 
     def setUp(self):
 
-        settings_path = os.path.join(os.getcwd(), "tests",  "settings.json")
-        self.fetcher = imgurfetcher.imgurfetcher(settings_path)
+        self.settings_path = os.path.join(os.getcwd(), "tests",
+                                          "settings.json")
+        self.fetcher = imgurfetcher.imgurfetcher(self.settings_path)
         self.gallery = []
 
         for i in range(NUMBER_OF_IMAGES):
@@ -144,6 +146,47 @@ class test_imgurfetcher(unittest.TestCase):
             mock_method.assert_called_once_with(self.album.id)
             self.assertTrue(result == self.gallery[-1])
 
+    """
+        tests that the constructor works properly
+    """
+    def test_constructor(self):
+
+        # test for wrong argument for settings file
+        with patch("bg_daemon.fetchers.imgurfetcher.os.path.join") as \
+                mock_method:
+
+            mock_method.return_value = None
+
+            with self.assertRaises(TypeError):
+                dummy_fetcher = imgurfetcher.imgurfetcher(None)
+
+        # test for corrupted json file
+        with patch("bg_daemon.fetchers.imgurfetcher.json.load") as mock_method:
+
+            # we write a json file that tries to overwrite the save method
+            corrupted_json = {"fetcher":{"query":None}}
+            mock_method.return_value = corrupted_json
+
+            with self.assertRaises(ValueError):
+                dummy_fetcher = imgurfetcher.imgurfetcher(None)
+
+        # test for a "recent" mode fallback when initializing
+        with patch("bg_daemon.fetchers.imgurfetcher.json.load") as mock_method:
+
+            corrupted_json = {"fetcher":{"mode":"nonexistent"}}
+            mock_method.return_value = corrupted_json
+
+            dummy_fetcher = imgurfetcher.imgurfetcher()
+            self.assertTrue(getattr(dummy_fetcher, "mode") is "recent")
+
+            corrupted_json = {"fetcher":{"mode":None}}
+            mock_method.return_value = corrupted_json
+
+            dummy_fetcher = imgurfetcher.imgurfetcher()
+            self.assertTrue(getattr(dummy_fetcher, "mode") is "recent")
+
+
+
     def _generate_title(self):
 
         with_blacklist = True if random.random() > .6 else False
@@ -163,6 +206,7 @@ class test_imgurfetcher(unittest.TestCase):
             keywords += "{} ".format(random.choice(self.fetcher.keywords))
 
         return "{} {} {}".format(blacklist, sub, keywords)
+
 
 
 if __name__ == '__main__':

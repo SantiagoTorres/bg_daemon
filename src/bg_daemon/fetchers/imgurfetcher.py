@@ -83,16 +83,19 @@ class imgurfetcher:
         try:
             with open(filename) as fp:
                 data = json.load(fp)
-        except Exception as e:
+        except IOError as e:
             raise
 
         if 'fetcher' in data:
 
             for key in data['fetcher']:
                 if key == 'query' or key == 'fetch' or key == 'save':
-                    raise Exception("The settings file is corrupted!")
+                    raise ValueError("The settings file is corrupted!")
 
                 setattr(self, key, data['fetcher'][key])
+
+        if self.mode is None:
+            self.mode = "recent"
 
         if self.mode != 'keywords' and self.mode != 'recent':
             self.mode = 'recent'
