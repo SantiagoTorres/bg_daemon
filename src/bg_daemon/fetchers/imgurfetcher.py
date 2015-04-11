@@ -7,6 +7,7 @@ import sys
 import logging
 
 from imgurpython import ImgurClient
+from imgurpython.helpers import GalleryAlbum, GalleryImage
 from bg_daemon.util import HOME
 
 CLIENT_ID = "b0d705fbff41bc1"
@@ -119,7 +120,7 @@ class imgurfetcher:
 
         # Download gallery data
         client = ImgurClient(self.client_id, None)
-        data = client.gallery_search(query, sort='time', window='month',
+        data = client.gallery_search(query, sort='time', window='year',
                                      page=0)
 
         # if we didn't get anything back... tough luck
@@ -144,9 +145,14 @@ class imgurfetcher:
     """
     def fetch(self, imgobject, filename):
 
-        assert(imgobject is not None)
-        assert(filename is not None)
-        assert(isinstance(filename, str))
+        if imgobject is None:
+            raise ValueError("ImgObject wasn't initialized properly!")
+
+        if filename is None:
+            raise ValueError("filename wasn't initialized properly!")
+
+        if not isinstance(filename, str):
+            raise ValueError("filename should be a string!")
 
         # title will be changed to ascii before saving
         title = imgobject.title.encode('ascii', 'replace')
@@ -211,12 +217,12 @@ class imgurfetcher:
 
         # Try to pick an image in the gallery
         elected = False
-        if self.blacklist_words is None:
-            return random.choice(galleries)
 
         attempts = 0
 
         while not elected:
+
+            logger.debug("Selecting image...")
 
             if self.mode == "keywords":
                 selected_image = random.choice(galleries)
@@ -226,26 +232,71 @@ class imgurfetcher:
                 except IndexError:
                     return None
 
+            # if the "image" is actually an album, try to get a valid candidate
+            # image from it.
+            if isinstance(selected_image, GalleryAlbum):
+                selected_image = self._get_image_from_album(selected_image)
+                if selected_image is None:
+                    continue
+
+            logger.debug("Selecting Image {}".format(selected_image.title))
             attempts += 1
             if attempts > 30:
                 return None
 
             if selected_image.width < self.min_width:
+                logger.debug("Rejecting due to width...")
                 continue
 
             if selected_image.height < self.min_height:
+                logger.debug("Rejecting due to height...")
                 continue
 
-            for word in self.blacklist_words:
-                if word in selected_image.title:
+            if self.blacklist_words is not None:
+
+                blacklist_words = set(self.blacklist_words)
+                title = set(selected_image.title.split())
+
+                if len(blacklist_words.intersection(title)):
+
+                    logger.debug("Rejecting due to blacklist_words...")
                     continue
 
-                if word in selected_image.title:
-                    continue
+                if selected_image.description is not None:
+                    description = set(selected_image.description.split())
+                    if len(blacklist_words.intersection(description)):
+                        logger.debug("Rejecting due to blacklist_words...")
+                        continue
 
-                elected = True
+            elected = True
+
+        logger.debug("Selected image {}".format(selected_image))
 
         return selected_image
+
+    """
+        _get_image_from_album
+
+        If the query results in an album, get an image from it.
+    """
+    def _get_image_from_album(self, album):
+
+        if not isinstance(album, GalleryAlbum):
+            raise ValueError("_get_image_from_album: album should be "
+                             "a GalleryAlbum instance!")
+
+        # Download gallery data
+        client = ImgurClient(self.client_id, None)
+        album_id = album.id
+
+        images = client.get_album_images(album_id)
+
+        # Try to select an appropriate image from this album, return the
+        # first one that fits our criteria.
+        if images is not None:
+            return self._select_image(images)
+
+        return None
 
 
 logger = logging.getLogger("bg_daemon")

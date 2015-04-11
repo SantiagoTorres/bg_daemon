@@ -10,6 +10,8 @@ import imgurpython
 import random
 import os
 
+from mock import patch
+
 NUMBER_OF_IMAGES = 500
 
 
@@ -17,6 +19,8 @@ class test_imgurfetcher(unittest.TestCase):
 
     fetcher = None
     gallery = None
+    albums = None
+    mock_client = None
 
     def setUp(self):
 
@@ -28,8 +32,17 @@ class test_imgurfetcher(unittest.TestCase):
             self.gallery.append(imgurpython.helpers.GalleryImage(
                 link=self._generate_title(),
                 title=self._generate_title(),
+                description=self._generate_title(),
                 width=random.randint(100, 10000),
                 height=random.randint(100, 10000)))
+
+        # we create a proper that passes all tests
+        self.gallery[-1].title = " ".join(self.fetcher.keywords)
+        self.gallery[-1].description = " ".join(self.fetcher.keywords)
+
+        # we populate a dummy album for testing
+        self.album = imgurpython.helpers.GalleryAlbum()
+        self.album.id = 1
 
     def tearDown(self):
         pass
@@ -81,6 +94,7 @@ class test_imgurfetcher(unittest.TestCase):
     Tests for:
         * Pick anything if there are no blacklist
         * Pick something that's not in the blacklist
+        * Picking an image from an album
     """
     def test_select_image(self):
 
@@ -96,6 +110,39 @@ class test_imgurfetcher(unittest.TestCase):
 
         for word in selected.title.strip().split(" "):
             self.assertTrue(word not in self.fetcher.blacklist_words)
+
+        with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
+                mock_class:
+
+            mock_method = mock_class.return_value.get_album_images
+            mock_method.return_value = [self.gallery[-1]]
+
+            result = self.fetcher._select_image([self.album])
+
+            mock_method.assert_called_once_with(self.album.id)
+            self.assertTrue(result == self.gallery[-1])
+
+    """
+    Tests for input sanity and proper output on the galleryAlbum helper.
+    """
+    def test_get_image_from_album(self):
+
+        with self.assertRaises(ValueError):
+            self.fetcher._get_image_from_album(None)
+
+        with self.assertRaises(ValueError):
+            self.fetcher._get_image_from_album(self.gallery[0])
+
+        with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
+                mock_class:
+
+            mock_method = mock_class.return_value.get_album_images
+            mock_method.return_value = [self.gallery[-1]]
+
+            result = self.fetcher._get_image_from_album(self.album)
+
+            mock_method.assert_called_once_with(self.album.id)
+            self.assertTrue(result == self.gallery[-1])
 
     def _generate_title(self):
 
