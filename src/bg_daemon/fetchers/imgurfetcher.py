@@ -80,11 +80,9 @@ class imgurfetcher:
         if not filename:
             filename = os.path.join(HOME, "settings.json")
 
-        try:
-            with open(filename) as fp:
-                data = json.load(fp)
-        except IOError as e:
-            raise
+
+        with open(filename) as fp:
+            data = json.load(fp)
 
         if 'fetcher' in data:
 
