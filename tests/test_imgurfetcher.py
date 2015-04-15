@@ -186,6 +186,37 @@ class test_imgurfetcher(unittest.TestCase):
             self.assertTrue(getattr(dummy_fetcher, "mode") is "recent")
 
 
+    """
+        test the query method
+    """
+    def test_query(self):
+
+        pass
+
+        with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
+                mock_class:
+
+            mock_method = mock_class.return_value.gallery_search
+            mock_method.return_value = None
+
+            # simulate that the datasource does not return something standard
+            result = self.fetcher.query()
+            self.assertTrue(result is None)
+            mock_method.assert_called_once()
+
+            # Simulate that the datasource returns an empty gallery
+            mock_method.return_value = []
+            result = self.fetcher.query()
+            self.assertTrue(result is None)
+            mock_method.assert_called_once()
+
+            # simulate a valid query
+            mock_method.return_value = [self.gallery[-1]]
+            result = self.fetcher.query()
+            self.assertTrue(result == self.gallery[-1])
+            mock_method.assert_called_once()
+
+
 
     def _generate_title(self):
 

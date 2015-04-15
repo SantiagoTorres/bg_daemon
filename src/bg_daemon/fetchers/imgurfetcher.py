@@ -125,7 +125,7 @@ class imgurfetcher:
                                      page=0)
 
         # if we didn't get anything back... tough luck
-        if len(data) < 1:
+        if data is None or len(data) < 1:
             return None
 
         logger.info("Found successful query {}".format(query))
