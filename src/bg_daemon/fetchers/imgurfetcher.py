@@ -301,13 +301,3 @@ class imgurfetcher:
 
 
 logger = logging.getLogger("bg_daemon")
-
-if __name__ == '__main__':
-
-    f = imgurfetcher()
-    image = f.query()
-    if image is not None:
-        f.fetch(image, sys.argv[1])
-        print("Fetch successful!")
-    else:
-        print("Fetch unsuccessful! :(")
