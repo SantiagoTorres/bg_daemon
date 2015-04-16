@@ -57,19 +57,22 @@ class test_imgurfetcher(unittest.TestCase):
 
     since query strings are randomized, we don't check the actual content of
     the query, but that everything is part of the settings...
+
+    we tests for both methods, recent and keyword
     """
     def test_build_query(self):
 
         # we will test for input sanitation.
+        self.fetcher.mode = 'keywords'
         keywords_backup = self.fetcher.keywords
         self.fetcher.keywords = None
 
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValueError):
             self.fetcher._build_query()
 
+        # verify that keywords is a list
         self.fetcher.keywords = 10
-
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValueError):
             self.fetcher._build_query()
 
         self.fetcher.keywords = keywords_backup
@@ -89,6 +92,26 @@ class test_imgurfetcher(unittest.TestCase):
 
             self.assertTrue(word not in self.fetcher.blacklist_words)
             self.assertTrue(is_here)
+
+        # test for recent mode mode
+        self.fetcher.mode = "recent"
+        query = self.fetcher._build_query()
+
+        self.assertTrue(query is not None)
+        self.assertTrue(isinstance(query, str))
+
+        for word in query.strip().split(" "):
+
+            is_here = False
+
+            if word in self.fetcher.keywords:
+                is_here = True
+            elif word in self.fetcher.subreddits:
+                is_here = True
+
+            self.assertTrue(word not in self.fetcher.blacklist_words)
+            self.assertTrue(is_here)
+
 
     """
     Tests for the select image to filter filenames properly.

@@ -181,7 +181,8 @@ class imgurfetcher:
     """
     def _build_query(self):
 
-        assert(self.keywords is not None and isinstance(self.keywords, list))
+        if not isinstance(self.keywords, list):
+            raise ValueError("keywords must be a list of keywords")
 
         subreddit = None
 
