@@ -239,6 +239,61 @@ class test_imgurfetcher(unittest.TestCase):
             self.assertTrue(result == self.gallery[-1])
             mock_method.assert_called_once()
 
+    """
+        test for the "fetch" method
+
+        we verify that:
+            * Input sanitation is performed properly
+            * The request is made to the proper link
+            * The file extension is appended if not in the link
+              (jpg is hardcoded)
+            * The request object returns a valid iterable
+            * Weird image titles are handled properly
+    """
+    def test_fetch(self):
+
+        imgobject = imgurpython.helpers.GalleryImage(link=None,
+                                                     title="Neat mountains",
+                                                     description="or not",
+                                                     width=10000, height=10000)
+
+
+
+        # verify that we can only send imgur objects here
+        with self.assertRaises(ValueError):
+            self.fetcher.fetch(None,  "filename")
+
+        with self.assertRaises(ValueError):
+            self.fetcher.fetch("badtype", "filename")
+
+        # verify that we send a proper filename here
+        with self.assertRaises(ValueError):
+            self.fetcher.fetch(imgobject, None)
+
+        with self.assertRaises(ValueError):
+            self.fetcher.fetch(imgobject, 10)
+
+        # check that the request is properly formatted
+        with patch("bg_daemon.fetchers.imgurfetcher.requests.get") as \
+                mock_method:
+
+
+            mock_method.return_value = None
+            imgobject.link = None
+
+            # we check that the link is properly checked when building
+            # the request
+            with self.assertRaises(ValueError):
+                self.fetcher.fetch(imgobject, "filename.jpg")
+
+
+
+
+
+
+
+
+
 
 
     def _generate_title(self):

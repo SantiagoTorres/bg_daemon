@@ -149,6 +149,9 @@ class imgurfetcher:
         if imgobject is None:
             raise ValueError("ImgObject wasn't initialized properly!")
 
+        if not isinstance(imgobject, GalleryImage):
+            raise ValueError("ImgObject wasn't initialized properly!")
+
         if filename is None:
             raise ValueError("filename wasn't initialized properly!")
 
@@ -160,6 +163,9 @@ class imgurfetcher:
         logger.info("Saving image {} to {}".format(title, filename))
 
         req = requests.get(imgobject.link)
+
+        if not isinstance(req, requests.Response):
+            raise ValueError("Didn't get a proper response from the server")
 
         # if we aren't provided an extension, we will do it for you.
         if len(os.path.splitext(filename)[1]) == 0:
