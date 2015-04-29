@@ -214,8 +214,6 @@ class test_imgurfetcher(unittest.TestCase):
     """
     def test_query(self):
 
-        pass
-
         with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
                 mock_class:
 
