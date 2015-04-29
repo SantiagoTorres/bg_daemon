@@ -22,6 +22,11 @@ class test_imgurfetcher(unittest.TestCase):
     albums = None
     mock_client = None
     settings_path = None
+    bad_image_height = None
+    bad_image_width = None
+    bad_image_title = None
+    bad_image_description = None
+    good_image = None
 
     def setUp(self):
 
@@ -38,9 +43,36 @@ class test_imgurfetcher(unittest.TestCase):
                 width=random.randint(100, 10000),
                 height=random.randint(100, 10000)))
 
-        # we create a proper that passes all tests
+        # we create a proper image that passes all tests
         self.gallery[-1].title = " ".join(self.fetcher.keywords)
         self.gallery[-1].description = " ".join(self.fetcher.keywords)
+
+        # create some template bad/good images for testing
+        self.bad_image_height = imgurpython.helpers.GalleryImage(link = None,
+                title = self.fetcher.keywords[0],
+                description = self.fetcher.keywords[0],
+                width = 10000, height = 1)
+
+        self.bad_image_width = imgurpython.helpers.GalleryImage(link = None,
+                title = self.fetcher.keywords[0],
+                description = self.fetcher.keywords[0],
+                width = 1, height = 10000)
+
+        self.bad_image_title = imgurpython.helpers.GalleryImage(link = None,
+                title = self.fetcher.blacklist_words[0],
+                description = self.fetcher.keywords[0],
+                width = 1000, height = 10000)
+
+
+        self.bad_image_description = imgurpython.helpers.GalleryImage(
+                link = None,
+                title = self.fetcher.keywords[0],
+                description = self.fetcher.blacklist_words[0],
+                width = 1000, height = 10000)
+
+        self.good_image = self.gallery[-1]
+
+
 
         # we populate a dummy album for testing
         self.album = imgurpython.helpers.GalleryAlbum()
@@ -136,6 +168,32 @@ class test_imgurfetcher(unittest.TestCase):
         for word in selected.title.strip().split(" "):
             self.assertTrue(word not in self.fetcher.blacklist_words)
 
+        # trigger an index error when there is no image, and return None
+        result = self.fetcher._select_image([])
+        self.assertTrue(result == None)
+
+        self.fetcher.min_width = 1000
+        self.fetcher.min_height = 1000
+        # trigger rejecting bc of width
+        result = self.fetcher._select_image([self.bad_image_width,
+                                             self.good_image])
+        self.assertTrue(result == self.good_image)
+
+        # trigger rejecting bc of height
+        result = self.fetcher._select_image([self.bad_image_height,
+                                             self.good_image])
+        self.assertTrue(result == self.good_image)
+
+        # trigger rejecting bc of title
+        result = self.fetcher._select_image([self.bad_image_title,
+                                             self.good_image])
+        self.assertTrue(result == self.good_image)
+
+        # trigger rejecting bc of description
+        result = self.fetcher._select_image([self.bad_image_description,
+                                             self.good_image])
+        self.assertTrue(result == self.good_image)
+
         with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
                 mock_class:
 
@@ -146,6 +204,33 @@ class test_imgurfetcher(unittest.TestCase):
 
             mock_method.assert_called_once_with(self.album.id)
             self.assertTrue(result == self.gallery[-1])
+
+            # the album returns non-working images... it should seek more, but
+            # that's it.
+            mock_method.return_value = []
+            result = self.fetcher._select_image([self.album])
+            self.assertTrue(result == None)
+
+            # now try with an image right after it, we should select the last
+            # image
+            result = self.fetcher._select_image([self.album, self.good_image])
+            self.assertTrue(result == self.good_image)
+
+            # finally, imagine that the get_album_image method breaks and
+            # returns none
+            mock_method.return_value = []
+            result = self.fetcher._select_image([self.album, self.good_image])
+            self.assertTrue(result == self.good_image)
+
+
+        # Test for keyword mode
+        self.fetcher.mode = "keywords"
+        result = self.fetcher._select_image([self.gallery[-1]])
+
+        self.assertTrue(result == self.gallery[-1])
+
+        # return everything to normal
+        self.fetcher.mode = "recent"
 
     """
     Tests for input sanity and proper output on the galleryAlbum helper.
