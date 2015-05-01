@@ -225,9 +225,10 @@ class test_imgurfetcher(unittest.TestCase):
 
             # finally, imagine that the get_album_image method breaks and
             # returns none
-            mock_method.return_value = []
+            mock_method.return_value = None
             result = self.fetcher._select_image([self.album, self.good_image])
             self.assertTrue(result == self.good_image)
+
 
 
         # Test for keyword mode
