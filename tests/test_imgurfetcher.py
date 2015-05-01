@@ -6,14 +6,18 @@
 """
 import unittest
 import bg_daemon.fetchers.imgurfetcher as imgurfetcher
+import requests
 import imgurpython
 import random
 import os
 
-from mock import patch
+from mock import patch, mock_open, Mock
 
 NUMBER_OF_IMAGES = 500
 
+def fake_iter_content(reference = None, chunk_size=1, decode_unicode=False):
+
+    return "flibble"
 
 class test_imgurfetcher(unittest.TestCase):
 
@@ -27,6 +31,7 @@ class test_imgurfetcher(unittest.TestCase):
     bad_image_title = None
     bad_image_description = None
     good_image = None
+    fake_response = None
 
     def setUp(self):
 
@@ -72,11 +77,13 @@ class test_imgurfetcher(unittest.TestCase):
 
         self.good_image = self.gallery[-1]
 
-
-
         # we populate a dummy album for testing
         self.album = imgurpython.helpers.GalleryAlbum()
         self.album.id = 1
+
+        # we monkeypatch the iter content method
+        self.fake_response = Mock(spec = requests.Response)
+        self.fake_response.iter_content = fake_iter_content
 
     def tearDown(self):
         pass
@@ -369,9 +376,23 @@ class test_imgurfetcher(unittest.TestCase):
             with self.assertRaises(ValueError):
                 self.fetcher.fetch(imgobject, "filename.jpg")
 
+            mock_method.return_value = self.fake_response
+            open_mock = mock_open()
+            with patch("bg_daemon.fetchers.imgurfetcher.open", open_mock,
+                    create = True):
 
+                # Assert that we actually try to write the file
+                self.fetcher.fetch(imgobject, "filename.jpg")
+                open_mock.assert_called_once_with("filename.jpg", "wb")
 
-
+            open_mock = mock_open()
+            with patch("bg_daemon.fetchers.imgurfetcher.open", open_mock,
+                    create = True):
+                # Assert that it tries to infer a different extension if
+                # not provided
+                imgobject.link = "filename.gif"
+                self.fetcher.fetch(imgobject, "filename")
+                open_mock.assert_called_once_with("filename.gif", "wb")
 
 
 
