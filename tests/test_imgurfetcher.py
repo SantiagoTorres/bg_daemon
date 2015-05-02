@@ -234,8 +234,11 @@ class test_imgurfetcher(unittest.TestCase):
         # Test for keyword mode
         self.fetcher.mode = "keywords"
         result = self.fetcher._select_image([self.gallery[-1]])
-
         self.assertTrue(result == self.gallery[-1])
+
+        # test that the fetcher gives up on 30 attempts
+        result = self.fetcher._select_image([self.bad_image_title]*50)
+        self.assertTrue(result == None)
 
         # return everything to normal
         self.fetcher.mode = "recent"
