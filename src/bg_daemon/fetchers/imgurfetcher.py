@@ -153,10 +153,10 @@ class imgurfetcher:
             raise ValueError("ImgObject wasn't initialized properly!")
 
         if filename is None:
-            raise ValueError("filename wasn't initialized properly!")
+            raise ValueError("Filename wasn't initialized properly!")
 
         if not isinstance(filename, str):
-            raise ValueError("filename should be a string!")
+            raise ValueError("Filename should be a string!")
 
         # title will be changed to ascii before saving
         title = imgobject.title.encode('ascii', 'replace')
@@ -191,7 +191,7 @@ class imgurfetcher:
     def _build_query(self):
 
         if not isinstance(self.keywords, list):
-            raise ValueError("keywords must be a list of keywords")
+            raise ValueError("Keywords must be a list of keywords")
 
         subreddit = None
 
@@ -293,7 +293,7 @@ class imgurfetcher:
     def _get_image_from_album(self, album):
 
         if not isinstance(album, GalleryAlbum):
-            raise ValueError("_get_image_from_album: album should be "
+            raise ValueError("Album should be "
                              "a GalleryAlbum instance!")
 
         # Download gallery data
