@@ -9,8 +9,8 @@ import bg_daemon.fetchers.imgurfetcher as imgurfetcher
 import requests
 import imgurpython
 import random
-import os
 
+from os.path import dirname, abspath, join
 from mock import patch, mock_open, Mock
 
 NUMBER_OF_IMAGES = 500
@@ -37,7 +37,7 @@ class test_imgurfetcher(unittest.TestCase):
 
     def setUp(self):
 
-        self.settings_path = os.path.join(os.getcwd(), "tests",
+        self.settings_path = join(dirname(abspath(__file__)),
                                           "settings.json")
         self.fetcher = imgurfetcher.imgurfetcher(self.settings_path)
         self.gallery = []
