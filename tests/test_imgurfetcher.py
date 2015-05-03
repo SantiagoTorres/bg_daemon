@@ -189,7 +189,7 @@ class test_imgurfetcher(unittest.TestCase):
 
         # trigger an index error when there is no image, and return None
         result = self.fetcher._select_image([])
-        self.assertTrue(result == None)
+        self.assertTrue(result is None)
 
         self.fetcher.min_width = 1000
         self.fetcher.min_height = 1000
@@ -228,7 +228,7 @@ class test_imgurfetcher(unittest.TestCase):
             # that's it.
             mock_method.return_value = []
             result = self.fetcher._select_image([self.album])
-            self.assertTrue(result == None)
+            self.assertTrue(result is None)
 
             # now try with an image right after it, we should select the last
             # image
@@ -248,7 +248,7 @@ class test_imgurfetcher(unittest.TestCase):
 
         # test that the fetcher gives up on 30 attempts
         result = self.fetcher._select_image([self.bad_image_title]*50)
-        self.assertTrue(result == None)
+        self.assertTrue(result is None)
 
         # return everything to normal
         self.fetcher.mode = "recent"
