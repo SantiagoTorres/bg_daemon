@@ -89,19 +89,28 @@ class test_imgurfetcher(unittest.TestCase):
     def tearDown(self):
         pass
 
-    """
-    Tests the private helper to build a query
-    Tests for:
-        * input sanitation
-        * a proper query string is formed
 
-    since query strings are randomized, we don't check the actual content of
-    the query, but that everything is part of the settings...
-
-    we tests for both methods, recent and keyword
-    """
     def test_build_query(self):
+        """
+        Tests the private helper to build a query
+        Tests for:
+            * input sanitation
+            * a proper query string is formed
 
+        we test for both methods, recent and keyword
+
+        Keyword:
+
+            since query strings are randomized, we don't check the actual
+            content of the query, but that everything is part of the
+            settings...
+
+        Recent:
+
+            * We just verify that the query is simple (subreddit tag or
+              similar)
+
+        """
         # we will test for input sanitation.
         self.fetcher.mode = 'keywords'
         keywords_backup = self.fetcher.keywords
@@ -153,16 +162,21 @@ class test_imgurfetcher(unittest.TestCase):
             self.assertTrue(is_here)
 
 
-    """
-    Tests for the select image to filter filenames properly.
-
-    Tests for:
-        * Pick anything if there are no blacklist
-        * Pick something that's not in the blacklist
-        * Picking an image from an album
-    """
     def test_select_image(self):
+        """
+        Tests for the select image to filter filenames properly.
 
+        Tests for:
+            * Pick anything if there are no blacklist
+            * Pick something that's not in the blacklist
+            * Picking an image from an album
+            * Wrong type on input
+            * A large randomized query without a valid candidate returns None
+            * Size constraints are met when selecting.
+            * If a gallery is found, search within the gallery first.
+            * Keyword mode randomly selects an image from the gallery.
+
+        """
         blacklist_backup = self.fetcher.blacklist_words
         self.fetcher.blacklist_words = None
 
@@ -242,11 +256,18 @@ class test_imgurfetcher(unittest.TestCase):
         # return everything to normal
         self.fetcher.mode = "recent"
 
-    """
-    Tests for input sanity and proper output on the galleryAlbum helper.
-    """
-    def test_get_image_from_album(self):
 
+    def test_get_image_from_album(self):
+        """
+
+            Tests for input sanity and proper output on the galleryAlbum helper.
+
+            Tests included here are:
+
+                * Wrong typed input
+                * A proper invocation method returns an expected image.
+
+        """
         with self.assertRaises(ValueError):
             self.fetcher._get_image_from_album(None)
 
@@ -264,11 +285,18 @@ class test_imgurfetcher(unittest.TestCase):
             mock_method.assert_called_once_with(self.album.id)
             self.assertTrue(result == self.gallery[-1])
 
-    """
-        tests that the constructor works properly
-    """
-    def test_constructor(self):
 
+    def test_constructor(self):
+        """
+            tests that the constructor works properly:
+
+            Tests included here are:
+
+                * Wrong typed arguments to the constructor
+                * Wrong/corrupted version of the settings file
+                * That the default method is "recent"
+
+        """
         # test for wrong argument for settings file
         with patch("bg_daemon.fetchers.imgurfetcher.os.path.join") as \
                 mock_method:
@@ -304,11 +332,18 @@ class test_imgurfetcher(unittest.TestCase):
             self.assertTrue(getattr(dummy_fetcher, "mode") is "recent")
 
 
-    """
-        test the query method
-    """
-    def test_query(self):
 
+    def test_query(self):
+        """
+            test the query method:
+
+            Tests that the query method does:
+
+                * That imgurpython returns something unexpected
+                * That imgurpython returns something valid and is properly
+                  selected.
+
+        """
         with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
                 mock_class:
 
@@ -332,19 +367,20 @@ class test_imgurfetcher(unittest.TestCase):
             self.assertTrue(result == self.gallery[-1])
             mock_method.assert_called_once()
 
-    """
-        test for the "fetch" method
 
-        we verify that:
-            * Input sanitation is performed properly
-            * The request is made to the proper link
-            * The file extension is appended if not in the link
-              (jpg is hardcoded)
-            * The request object returns a valid iterable
-            * Weird image titles are handled properly
-    """
     def test_fetch(self):
+        """
+            test for the "fetch" method
 
+            we verify that:
+                * Input sanitation is performed properly
+                * The request is made to the proper link
+                * The file extension is appended if not in the link
+                  (jpg is hardcoded)
+                * The request object returns a valid iterable
+                * Weird image titles are handled properly
+
+        """
         imgobject = imgurpython.helpers.GalleryImage(link=None,
                                                      title="Neat mountains",
                                                      description="or not",
