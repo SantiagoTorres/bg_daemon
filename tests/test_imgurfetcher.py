@@ -217,12 +217,12 @@ class test_imgurfetcher(unittest.TestCase):
                 mock_class:
 
             mock_method = mock_class.return_value.get_album_images
-            mock_method.return_value = [self.gallery[-1]]
+            mock_method.return_value = [self.good_image]
 
             result = self.fetcher._select_image([self.album])
 
             mock_method.assert_called_once_with(self.album.id)
-            self.assertTrue(result == self.gallery[-1])
+            self.assertTrue(result == self.good_image)
 
             # the album returns non-working images... it should seek more, but
             # that's it.
@@ -243,8 +243,8 @@ class test_imgurfetcher(unittest.TestCase):
 
         # Test for keyword mode
         self.fetcher.mode = "keywords"
-        result = self.fetcher._select_image([self.gallery[-1]])
-        self.assertTrue(result == self.gallery[-1])
+        result = self.fetcher._select_image([self.good_image])
+        self.assertTrue(result == self.good_image)
 
         # test that the fetcher gives up on 30 attempts
         result = self.fetcher._select_image([self.bad_image_title]*50)
@@ -275,12 +275,12 @@ class test_imgurfetcher(unittest.TestCase):
                 mock_class:
 
             mock_method = mock_class.return_value.get_album_images
-            mock_method.return_value = [self.gallery[-1]]
+            mock_method.return_value = [self.good_image]
 
             result = self.fetcher._get_image_from_album(self.album)
 
             mock_method.assert_called_once_with(self.album.id)
-            self.assertTrue(result == self.gallery[-1])
+            self.assertTrue(result == self.good_image)
 
 
     def test_constructor(self):
@@ -359,9 +359,9 @@ class test_imgurfetcher(unittest.TestCase):
             mock_method.assert_called_once()
 
             # simulate a valid query
-            mock_method.return_value = [self.gallery[-1]]
+            mock_method.return_value = [self.good_image]
             result = self.fetcher.query()
-            self.assertTrue(result == self.gallery[-1])
+            self.assertTrue(result == self.good_image)
             mock_method.assert_called_once()
 
 
