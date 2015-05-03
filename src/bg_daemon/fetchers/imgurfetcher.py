@@ -81,7 +81,7 @@ class imgurfetcher:
             filename = os.path.join(HOME, "settings.json")
 
 
-        with open(filename) as fp:
+        with open(filename, 'rU') as fp:
             data = json.load(fp)
 
         if 'fetcher' in data:
