@@ -127,7 +127,7 @@ class test_imgurfetcher(unittest.TestCase):
         self.assertTrue(query is not None)
         self.assertTrue(isinstance(query, str))
 
-        for word in query.strip().split(" "):
+        for word in query.strip().split():
 
             is_here = False
 
@@ -146,7 +146,7 @@ class test_imgurfetcher(unittest.TestCase):
         self.assertTrue(query is not None)
         self.assertTrue(isinstance(query, str))
 
-        for word in query.strip().split(" "):
+        for word in query.strip().split():
 
             is_here = False
 
@@ -184,7 +184,7 @@ class test_imgurfetcher(unittest.TestCase):
 
         selected = self.fetcher._select_image(self.gallery)
 
-        for word in selected.title.strip().split(" "):
+        for word in selected.title.strip().split():
             self.assertTrue(word not in self.fetcher.blacklist_words)
 
         # trigger an index error when there is no image, and return None
