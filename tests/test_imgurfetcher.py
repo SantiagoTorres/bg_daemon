@@ -86,9 +86,6 @@ class test_imgurfetcher(unittest.TestCase):
         self.fake_response = Mock(spec = requests.Response)
         self.fake_response.iter_content = fake_iter_content
 
-    def tearDown(self):
-        pass
-
 
     def test_build_query(self):
         """
