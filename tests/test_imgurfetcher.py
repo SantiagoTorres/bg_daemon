@@ -16,7 +16,7 @@ from mock import patch, mock_open, Mock
 NUMBER_OF_IMAGES = 500
 
 
-def fake_iter_content(reference = None, chunk_size=1, decode_unicode=False):
+def fake_iter_content(reference=None, chunk_size=1, decode_unicode=False):
 
     return "flibble"
 
@@ -37,8 +37,7 @@ class test_imgurfetcher(unittest.TestCase):
 
     def setUp(self):
 
-        self.settings_path = join(dirname(abspath(__file__)),
-                                          "settings.json")
+        self.settings_path = join(dirname(abspath(__file__)), "settings.json")
         self.fetcher = imgurfetcher.imgurfetcher(self.settings_path)
         self.gallery = []
 
@@ -55,26 +54,26 @@ class test_imgurfetcher(unittest.TestCase):
         self.gallery[-1].description = " ".join(self.fetcher.keywords)
 
         # create some template bad/good images for testing
-        self.bad_image_height = imgurpython.helpers.GalleryImage(link = None,
-                title = self.fetcher.keywords[0],
-                description = self.fetcher.keywords[0],
-                width = 10000, height = 1)
+        self.bad_image_height = imgurpython.helpers.GalleryImage(link=None,
+                title=self.fetcher.keywords[0],
+                description=self.fetcher.keywords[0],
+                width=10000, height=1)
 
-        self.bad_image_width = imgurpython.helpers.GalleryImage(link = None,
-                title = self.fetcher.keywords[0],
-                description = self.fetcher.keywords[0],
-                width = 1, height = 10000)
+        self.bad_image_width = imgurpython.helpers.GalleryImage(link=None,
+                title=self.fetcher.keywords[0],
+                description=self.fetcher.keywords[0],
+                width=1, height=10000)
 
-        self.bad_image_title = imgurpython.helpers.GalleryImage(link = None,
-                title = self.fetcher.blacklist_words[0],
-                description = self.fetcher.keywords[0],
-                width = 1000, height = 10000)
+        self.bad_image_title = imgurpython.helpers.GalleryImage(link=None,
+                title=self.fetcher.blacklist_words[0],
+                description=self.fetcher.keywords[0],
+                width=1000, height=10000)
 
         self.bad_image_description = imgurpython.helpers.GalleryImage(
-                link = None,
-                title = self.fetcher.keywords[0],
-                description = self.fetcher.blacklist_words[0],
-                width = 1000, height = 10000)
+                link=None,
+                title=self.fetcher.keywords[0],
+                description=self.fetcher.blacklist_words[0],
+                width=1000, height=10000)
 
         self.good_image = self.gallery[-1]
 
@@ -83,9 +82,8 @@ class test_imgurfetcher(unittest.TestCase):
         self.album.id = 1
 
         # we monkeypatch the iter content method
-        self.fake_response = Mock(spec = requests.Response)
+        self.fake_response = Mock(spec=requests.Response)
         self.fake_response.iter_content = fake_iter_content
-
 
     def test_build_query(self):
         """
@@ -158,7 +156,6 @@ class test_imgurfetcher(unittest.TestCase):
             self.assertTrue(word not in self.fetcher.blacklist_words)
             self.assertTrue(is_here)
 
-
     def test_select_image(self):
         """
         Tests for the select image to filter filenames properly.
@@ -196,22 +193,22 @@ class test_imgurfetcher(unittest.TestCase):
         # trigger rejecting bc of width
         result = self.fetcher._select_image([self.bad_image_width,
                                              self.good_image])
-        self.assertTrue(result == self.good_image)
+        self.assertEquals(result, self.good_image)
 
         # trigger rejecting bc of height
         result = self.fetcher._select_image([self.bad_image_height,
                                              self.good_image])
-        self.assertTrue(result == self.good_image)
+        self.assertEquals(result, self.good_image)
 
         # trigger rejecting bc of title
         result = self.fetcher._select_image([self.bad_image_title,
                                              self.good_image])
-        self.assertTrue(result == self.good_image)
+        self.assertEquals(result, self.good_image)
 
         # trigger rejecting bc of description
         result = self.fetcher._select_image([self.bad_image_description,
                                              self.good_image])
-        self.assertTrue(result == self.good_image)
+        self.assertEquals(result, self.good_image)
 
         with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
                 mock_class:
@@ -222,7 +219,7 @@ class test_imgurfetcher(unittest.TestCase):
             result = self.fetcher._select_image([self.album])
 
             mock_method.assert_called_once_with(self.album.id)
-            self.assertTrue(result == self.good_image)
+            self.assertEquals(result, self.good_image)
 
             # the album returns non-working images... it should seek more, but
             # that's it.
@@ -233,18 +230,18 @@ class test_imgurfetcher(unittest.TestCase):
             # now try with an image right after it, we should select the last
             # image
             result = self.fetcher._select_image([self.album, self.good_image])
-            self.assertTrue(result == self.good_image)
+            self.assertEquals(result, self.good_image)
 
             # finally, imagine that the get_album_image method breaks and
             # returns none
             mock_method.return_value = None
             result = self.fetcher._select_image([self.album, self.good_image])
-            self.assertTrue(result == self.good_image)
+            self.assertEquals(result, self.good_image)
 
         # Test for keyword mode
         self.fetcher.mode = "keywords"
         result = self.fetcher._select_image([self.good_image])
-        self.assertTrue(result == self.good_image)
+        self.assertEquals(result, self.good_image)
 
         # test that the fetcher gives up on 30 attempts
         result = self.fetcher._select_image([self.bad_image_title]*50)
@@ -253,11 +250,11 @@ class test_imgurfetcher(unittest.TestCase):
         # return everything to normal
         self.fetcher.mode = "recent"
 
-
     def test_get_image_from_album(self):
         """
 
-            Tests for input sanity and proper output on the galleryAlbum helper.
+            Tests for input sanity and proper output on the galleryAlbum
+            helper.
 
             Tests included here are:
 
@@ -280,8 +277,7 @@ class test_imgurfetcher(unittest.TestCase):
             result = self.fetcher._get_image_from_album(self.album)
 
             mock_method.assert_called_once_with(self.album.id)
-            self.assertTrue(result == self.good_image)
-
+            self.assertEquals(result, self.good_image)
 
     def test_constructor(self):
         """
@@ -307,7 +303,7 @@ class test_imgurfetcher(unittest.TestCase):
         with patch("bg_daemon.fetchers.imgurfetcher.json.load") as mock_method:
 
             # we write a json file that tries to overwrite the save method
-            corrupted_json = {"fetcher":{"query":None}}
+            corrupted_json = {"fetcher": {"query": None}}
             mock_method.return_value = corrupted_json
 
             with self.assertRaises(ValueError):
@@ -316,19 +312,17 @@ class test_imgurfetcher(unittest.TestCase):
         # test for a "recent" mode fallback when initializing
         with patch("bg_daemon.fetchers.imgurfetcher.json.load") as mock_method:
 
-            corrupted_json = {"fetcher":{"mode":"nonexistent"}}
+            corrupted_json = {"fetcher": {"mode": "nonexistent"}}
             mock_method.return_value = corrupted_json
 
             dummy_fetcher = imgurfetcher.imgurfetcher(self.settings_path)
             self.assertTrue(dummy_fetcher.mode is "recent")
 
-            corrupted_json = {"fetcher":{"mode":None}}
+            corrupted_json = {"fetcher": {"mode": None}}
             mock_method.return_value = corrupted_json
 
             dummy_fetcher = imgurfetcher.imgurfetcher(self.settings_path)
             self.assertTrue(dummy_fetcher.mode is "recent")
-
-
 
     def test_query(self):
         """
@@ -361,9 +355,8 @@ class test_imgurfetcher(unittest.TestCase):
             # simulate a valid query
             mock_method.return_value = [self.good_image]
             result = self.fetcher.query()
-            self.assertTrue(result == self.good_image)
+            self.assertEquals(result, self.good_image)
             mock_method.assert_called_once()
-
 
     def test_fetch(self):
         """
@@ -383,7 +376,6 @@ class test_imgurfetcher(unittest.TestCase):
                                                      description="or not",
                                                      width=10000, height=10000)
 
-
         # verify that we can only send imgur objects here
         with self.assertRaises(ValueError):
             self.fetcher.fetch(None, "filename")
@@ -402,7 +394,6 @@ class test_imgurfetcher(unittest.TestCase):
         with patch("bg_daemon.fetchers.imgurfetcher.requests.get") as \
                 mock_method:
 
-
             mock_method.return_value = None
             imgobject.link = None
 
@@ -414,7 +405,7 @@ class test_imgurfetcher(unittest.TestCase):
             mock_method.return_value = self.fake_response
             open_mock = mock_open()
             with patch("bg_daemon.fetchers.imgurfetcher.open", open_mock,
-                    create = True):
+                       create=True):
 
                 # Assert that we actually try to write the file
                 self.fetcher.fetch(imgobject, "filename.jpg")
@@ -422,13 +413,12 @@ class test_imgurfetcher(unittest.TestCase):
 
             open_mock = mock_open()
             with patch("bg_daemon.fetchers.imgurfetcher.open", open_mock,
-                    create = True):
+                       create=True):
                 # Assert that it tries to infer a different extension if
                 # not provided
                 imgobject.link = "filename.gif"
                 self.fetcher.fetch(imgobject, "filename")
                 open_mock.assert_called_once_with("filename.gif", "wb")
-
 
     def _generate_title(self):
 
@@ -449,8 +439,6 @@ class test_imgurfetcher(unittest.TestCase):
             keywords += "{} ".format(random.choice(self.fetcher.keywords))
 
         return "{} {} {}".format(blacklist, sub, keywords)
-
-
 
 if __name__ == '__main__':
     unittest.main()
