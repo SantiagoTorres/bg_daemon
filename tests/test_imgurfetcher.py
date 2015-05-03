@@ -15,9 +15,11 @@ from mock import patch, mock_open, Mock
 
 NUMBER_OF_IMAGES = 500
 
+
 def fake_iter_content(reference = None, chunk_size=1, decode_unicode=False):
 
     return "flibble"
+
 
 class test_imgurfetcher(unittest.TestCase):
 
@@ -67,7 +69,6 @@ class test_imgurfetcher(unittest.TestCase):
                 title = self.fetcher.blacklist_words[0],
                 description = self.fetcher.keywords[0],
                 width = 1000, height = 10000)
-
 
         self.bad_image_description = imgurpython.helpers.GalleryImage(
                 link = None,
@@ -229,8 +230,6 @@ class test_imgurfetcher(unittest.TestCase):
             result = self.fetcher._select_image([self.album, self.good_image])
             self.assertTrue(result == self.good_image)
 
-
-
         # Test for keyword mode
         self.fetcher.mode = "keywords"
         result = self.fetcher._select_image([self.gallery[-1]])
@@ -352,10 +351,9 @@ class test_imgurfetcher(unittest.TestCase):
                                                      width=10000, height=10000)
 
 
-
         # verify that we can only send imgur objects here
         with self.assertRaises(ValueError):
-            self.fetcher.fetch(None,  "filename")
+            self.fetcher.fetch(None, "filename")
 
         with self.assertRaises(ValueError):
             self.fetcher.fetch("badtype", "filename")
@@ -397,11 +395,6 @@ class test_imgurfetcher(unittest.TestCase):
                 imgobject.link = "filename.gif"
                 self.fetcher.fetch(imgobject, "filename")
                 open_mock.assert_called_once_with("filename.gif", "wb")
-
-
-
-
-
 
 
     def _generate_title(self):
