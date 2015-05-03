@@ -167,6 +167,9 @@ class imgurfetcher:
         if not isinstance(req, requests.Response):
             raise ValueError("Didn't get a proper response from the server")
 
+        # check that we get a 200 response.
+        req.raise_for_status();
+
         # if we aren't provided an extension, we will do it for you.
         if len(os.path.splitext(filename)[1]) == 0:
             root, ext = os.path.splitext(imgobject.link)
