@@ -80,19 +80,20 @@ class imgurfetcher:
         if not filename:
             filename = os.path.join(HOME, "settings.json")
 
-        try:
-            with open(filename) as fp:
-                data = json.load(fp)
-        except Exception as e:
-            raise
+
+        with open(filename, 'rU') as fp:
+            data = json.load(fp)
 
         if 'fetcher' in data:
 
             for key in data['fetcher']:
                 if key == 'query' or key == 'fetch' or key == 'save':
-                    raise Exception("The settings file is corrupted!")
+                    raise ValueError("The settings file is corrupted!")
 
                 setattr(self, key, data['fetcher'][key])
+
+        if self.mode is None:
+            self.mode = "recent"
 
         if self.mode != 'keywords' and self.mode != 'recent':
             self.mode = 'recent'
@@ -124,7 +125,7 @@ class imgurfetcher:
                                      page=0)
 
         # if we didn't get anything back... tough luck
-        if len(data) < 1:
+        if data is None or len(data) < 1:
             return None
 
         logger.info("Found successful query {}".format(query))
@@ -148,17 +149,26 @@ class imgurfetcher:
         if imgobject is None:
             raise ValueError("ImgObject wasn't initialized properly!")
 
+        if not isinstance(imgobject, GalleryImage):
+            raise ValueError("ImgObject wasn't initialized properly!")
+
         if filename is None:
-            raise ValueError("filename wasn't initialized properly!")
+            raise ValueError("Filename wasn't initialized properly!")
 
         if not isinstance(filename, str):
-            raise ValueError("filename should be a string!")
+            raise ValueError("Filename should be a string!")
 
         # title will be changed to ascii before saving
         title = imgobject.title.encode('ascii', 'replace')
         logger.info("Saving image {} to {}".format(title, filename))
 
         req = requests.get(imgobject.link)
+
+        if not isinstance(req, requests.Response):
+            raise ValueError("Didn't get a proper response from the server")
+
+        # check that we get a 200 response.
+        req.raise_for_status();
 
         # if we aren't provided an extension, we will do it for you.
         if len(os.path.splitext(filename)[1]) == 0:
@@ -180,7 +190,8 @@ class imgurfetcher:
     """
     def _build_query(self):
 
-        assert(self.keywords is not None and isinstance(self.keywords, list))
+        if not isinstance(self.keywords, list):
+            raise ValueError("Keywords must be a list of keywords")
 
         subreddit = None
 
@@ -282,7 +293,7 @@ class imgurfetcher:
     def _get_image_from_album(self, album):
 
         if not isinstance(album, GalleryAlbum):
-            raise ValueError("_get_image_from_album: album should be "
+            raise ValueError("Album should be "
                              "a GalleryAlbum instance!")
 
         # Download gallery data
@@ -300,13 +311,3 @@ class imgurfetcher:
 
 
 logger = logging.getLogger("bg_daemon")
-
-if __name__ == '__main__':
-
-    f = imgurfetcher()
-    image = f.query()
-    if image is not None:
-        f.fetch(image, sys.argv[1])
-        print("Fetch successful!")
-    else:
-        print("Fetch unsuccessful! :(")
