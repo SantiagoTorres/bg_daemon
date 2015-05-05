@@ -278,13 +278,13 @@ class test_imgurfetcher(unittest.TestCase):
 
     def test_constructor(self):
         """
-            tests that the constructor works properly:
+        tests that the constructor works properly:
 
-            Tests included here are:
+        Tests included here are:
 
-                * Wrong typed arguments to the constructor
-                * Wrong/corrupted version of the settings file
-                * That the default method is "recent"
+            * Wrong typed arguments to the constructor
+            * Wrong/corrupted version of the settings file
+            * That the default method is "recent"
         """
         # test for wrong argument for settings file
         with patch("bg_daemon.fetchers.imgurfetcher.os.path.join") as \
@@ -322,13 +322,13 @@ class test_imgurfetcher(unittest.TestCase):
 
     def test_query(self):
         """
-            test the query method:
+        test the query method:
 
-            Tests that the query method does:
+        Tests that the query method does:
 
-                * That imgurpython returns something unexpected
-                * That imgurpython returns something valid and is properly
-                  selected.
+            * That imgurpython returns something unexpected
+            * That imgurpython returns something valid and is properly
+              selected.
         """
         with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
                 mock_class:
