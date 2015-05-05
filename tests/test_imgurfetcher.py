@@ -169,7 +169,6 @@ class test_imgurfetcher(unittest.TestCase):
             * Size constraints are met when selecting.
             * If a gallery is found, search within the gallery first.
             * Keyword mode randomly selects an image from the gallery.
-
         """
         blacklist_backup = self.fetcher.blacklist_words
         self.fetcher.blacklist_words = None
@@ -252,15 +251,13 @@ class test_imgurfetcher(unittest.TestCase):
 
     def test_get_image_from_album(self):
         """
+        Tests for input sanity and proper output on the galleryAlbum
+        helper.
 
-            Tests for input sanity and proper output on the galleryAlbum
-            helper.
+        Tests included here are:
 
-            Tests included here are:
-
-                * Wrong typed input
-                * A proper invocation method returns an expected image.
-
+            * Wrong typed input
+            * A proper invocation method returns an expected image.
         """
         with self.assertRaises(ValueError):
             self.fetcher._get_image_from_album(None)
@@ -288,7 +285,6 @@ class test_imgurfetcher(unittest.TestCase):
                 * Wrong typed arguments to the constructor
                 * Wrong/corrupted version of the settings file
                 * That the default method is "recent"
-
         """
         # test for wrong argument for settings file
         with patch("bg_daemon.fetchers.imgurfetcher.os.path.join") as \
@@ -333,7 +329,6 @@ class test_imgurfetcher(unittest.TestCase):
                 * That imgurpython returns something unexpected
                 * That imgurpython returns something valid and is properly
                   selected.
-
         """
         with patch("bg_daemon.fetchers.imgurfetcher.ImgurClient") as \
                 mock_class:
@@ -360,16 +355,15 @@ class test_imgurfetcher(unittest.TestCase):
 
     def test_fetch(self):
         """
-            test for the "fetch" method
+        test for the "fetch" method
 
-            we verify that:
-                * Input sanitation is performed properly
-                * The request is made to the proper link
-                * The file extension is appended if not in the link
-                  (jpg is hardcoded)
-                * The request object returns a valid iterable
-                * Weird image titles are handled properly
-
+        we verify that:
+            * Input sanitation is performed properly
+            * The request is made to the proper link
+            * The file extension is appended if not in the link
+              (jpg is hardcoded)
+            * The request object returns a valid iterable
+            * Weird image titles are handled properly
         """
         imgobject = imgurpython.helpers.GalleryImage(link=None,
                                                      title="Neat mountains",
