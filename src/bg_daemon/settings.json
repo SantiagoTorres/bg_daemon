@@ -9,12 +9,13 @@
                       "night",
                       "moon"
                     ],
-        
+
         "subreddits": [ "earthporn"
                     ],
 
         "blacklist_words":["gore"],
-        "mode":"recent"
+        "mode":"recent",
+        "nsfw":True
     },
     "daemon":{
         "fetcher":"imgurfetcher",
