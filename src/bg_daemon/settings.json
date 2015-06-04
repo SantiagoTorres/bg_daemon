@@ -15,7 +15,7 @@
 
         "blacklist_words":["gore"],
         "mode":"recent",
-        "nsfw":True
+        "nsfw":False
     },
     "daemon":{
         "fetcher":"imgurfetcher",
