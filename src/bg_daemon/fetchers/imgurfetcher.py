@@ -50,7 +50,7 @@ class imgurfetcher:
                   and randomly select an image in it. If mode is not either,
                   it will default to recent.
 
-            nsfw: tells whether accept images with the nsfw tag set
+            nsfw: Defines if images marked as nsfw should be fetched or not.
 
         <Functions>
 
