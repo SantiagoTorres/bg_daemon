@@ -75,6 +75,13 @@ or description of the image. Imgur can host some really nasty things, so
 this seems to be a required feature.
 
 
+#### nsfw
+
+By default, files marked as
+[nsfw](http://www.urbandictionary.com/define.php?term=NSFW&defid=248838) are
+ignored, but you can change this by setting nsfw:True in settings.json
+
+
 ### Setting up the daemon
 
 #### Choosing a fetcher

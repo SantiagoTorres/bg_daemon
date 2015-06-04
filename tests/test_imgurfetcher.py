@@ -34,6 +34,7 @@ class test_imgurfetcher(unittest.TestCase):
     bad_image_description = None
     good_image = None
     fake_response = None
+    nsfw_image = None
 
     def setUp(self):
 
@@ -47,7 +48,8 @@ class test_imgurfetcher(unittest.TestCase):
                 title=self._generate_title(),
                 description=self._generate_title(),
                 width=random.randint(100, 10000),
-                height=random.randint(100, 10000)))
+                height=random.randint(100, 10000),
+                nsfw = False))
 
         # we create a proper image that passes all tests
         self.gallery[-1].title = " ".join(self.fetcher.keywords)
@@ -57,25 +59,30 @@ class test_imgurfetcher(unittest.TestCase):
         self.bad_image_height = imgurpython.helpers.GalleryImage(link=None,
                 title=self.fetcher.keywords[0],
                 description=self.fetcher.keywords[0],
-                width=10000, height=1)
+                width=10000, height=1, nsfw=False)
 
         self.bad_image_width = imgurpython.helpers.GalleryImage(link=None,
                 title=self.fetcher.keywords[0],
                 description=self.fetcher.keywords[0],
-                width=1, height=10000)
+                width=1, height=10000, nsfw=False)
 
         self.bad_image_title = imgurpython.helpers.GalleryImage(link=None,
                 title=self.fetcher.blacklist_words[0],
                 description=self.fetcher.keywords[0],
-                width=1000, height=10000)
+                width=1000, height=10000, nsfw=False)
 
         self.bad_image_description = imgurpython.helpers.GalleryImage(
                 link=None,
                 title=self.fetcher.keywords[0],
                 description=self.fetcher.blacklist_words[0],
-                width=1000, height=10000)
+                width=1000, height=10000, nsfw=False)
 
         self.good_image = self.gallery[-1]
+
+        self.nsfw_image = imgurpython.helpers.GalleryImage(link=None,
+                title=self.fetcher.keywords[0],
+                description=self.fetcher.keywords[0],
+                width=10000, height=10000, nsfw=True)
 
         # we populate a dummy album for testing
         self.album = imgurpython.helpers.GalleryAlbum()
@@ -206,6 +213,11 @@ class test_imgurfetcher(unittest.TestCase):
 
         # trigger rejecting bc of description
         result = self.fetcher._select_image([self.bad_image_description,
+                                             self.good_image])
+        self.assertEquals(result, self.good_image)
+
+        # trigger nsfw rejection
+        result = self.fetcher._select_image([self.nsfw_image,
                                              self.good_image])
         self.assertEquals(result, self.good_image)
 

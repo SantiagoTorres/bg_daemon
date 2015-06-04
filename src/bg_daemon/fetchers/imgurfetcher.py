@@ -50,6 +50,8 @@ class imgurfetcher:
                   and randomly select an image in it. If mode is not either,
                   it will default to recent.
 
+            nsfw: Defines if images marked as nsfw should be fetched or not.
+
         <Functions>
 
             query(): Finds a candidate gallery to download
@@ -63,6 +65,7 @@ class imgurfetcher:
     max_size = None
     blacklist_words = None
     mode = None
+    nsfw = False
 
     """
         __init__
@@ -279,6 +282,10 @@ class imgurfetcher:
                         logger.debug("Rejecting due to blacklist_words...")
                         continue
 
+                if selected_image.nsfw and not self.nsfw:
+                    logger.debug("Rejecting due to nsfw tag")
+                    continue
+
             elected = True
 
         logger.debug("Selected image {}".format(selected_image))
@@ -306,8 +313,6 @@ class imgurfetcher:
         # first one that fits our criteria.
         if images is not None:
             return self._select_image(images)
-
-        return None
 
 
 logger = logging.getLogger("bg_daemon")
