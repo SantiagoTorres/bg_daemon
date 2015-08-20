@@ -66,7 +66,7 @@ not be available (until someone writes a fetcher for that).
 
 #### min_width, min_height
 
-You can set a minimum size constraint so the images have a proper resoltuion.
+You can set a minimum size constraint so the images have a proper resolution.
 
 #### blacklist\_words
 
@@ -100,10 +100,10 @@ hour.
 
 It is possible that sometimes the fetcher fails (e.g., a 404, server is
 overloaded, you lost connection, etc.), instead of failing silently, the
-daemon can wait "slack" amount of time and retry up to "retires" times.
+daemon can wait "slack" amount of time and retry up to "retries" times.
 
 You can set slack to a low number to make it wait less between retries and
-increase the number of retries if needed. *I'd advice to leave it in the
+increase the number of retries if needed. *I'd advise you to leave it in the
 default values*.
 
 #### Target

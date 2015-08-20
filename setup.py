@@ -26,10 +26,10 @@ setup(
     version="0.0.1",
     author="Santiago Torres",
     author_email="torresariass@gmail.com",
-    description=("An extensible set of classes that can programatically "
+    description=("An extensible set of classes that can programmatically "
                  "update the desktop wallpaper"),
     license="GPLv2",
-    keywords="imgur desktop wallpapaer background",
+    keywords="imgur desktop wallpaper background",
     url="https://github.com/santiagotorres/bg_daemon",
     packages=["bg_daemon", "bg_daemon.fetchers"],
     package_dir={"bg_daemon": "src/bg_daemon",
