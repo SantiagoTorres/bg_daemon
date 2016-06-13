@@ -13,6 +13,7 @@ import json
 import time
 import subprocess
 import shlex
+import argparse
 
 from bg_daemon.fetchers.imgurfetcher import imgurfetcher
 from bg_daemon.log import logger as log
@@ -176,7 +177,7 @@ class background_daemon:
         Checks whether is time to update or not
 
     """
-    def poll(self):
+    def poll(self, force=False):
 
         filename = os.path.join(HOME, "timestamp")
 
@@ -191,7 +192,7 @@ class background_daemon:
                 log.error("timestamp is corrupted!, initializing...")
                 return self._initialize_datetime()
 
-            if datetime.datetime.now() > updatedate:
+            if force or datetime.datetime.now() > updatedate:
                 log.debug("updating timestamp")
                 self.update()
                 nexttimestamp = datetime.datetime.now() + datetime.timedelta(
@@ -237,4 +238,9 @@ class background_daemon:
 """
 if __name__ == "__main__":
     daemon = background_daemon()
-    daemon.poll()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--force", help="Disregard the last updated check",
+                        action="store_true")
+    args = parser.parse_args()
+    daemon.poll(args.force)
