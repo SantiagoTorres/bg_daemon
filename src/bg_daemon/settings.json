@@ -25,7 +25,8 @@
         "target":"/home/santiago/Documents/Backgrounds/bg.jpg",
         "backup":"yes",
         "update_hook":"feh --bg-fill /home/santiago/Documents/Backgrounds/bg.jpg",
-        "env":{"DISPLAY":":0"}
+        "env":{"DISPLAY":":0"},
+        "info_file": "info.json"
     }
 
 }

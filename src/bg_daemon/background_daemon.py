@@ -51,6 +51,7 @@ class background_daemon:
     """
     fetcher = None
     target = None
+    info_file = None
     frequency = None
     retries = None
     slack = None
@@ -153,6 +154,7 @@ class background_daemon:
 
         try:
             self.fetcher.fetch(query, self.target)
+            self.fetcher.save_info(query, self.info_file)
         except Exception as e:
             log.error("Fetcher error, couldn't fetch image!")
             if self.backup and not os.path.isdir(self.target):
@@ -211,6 +213,20 @@ class background_daemon:
             return self._initialize_timestamp()
 
     """
+        show_info method
+
+        loads .bg_daemon/info.json and prints the information to stdout
+    """
+    def show_info(self):
+
+        with open(self.info_file) as fp:
+            info = json.load(fp)
+
+        print("Displaying information of current image...")
+        for key in info:
+            print("{:30}: {}".format(key, info[key]))
+
+    """
         _initialize_timestamp()
 
         If the timestamp file is corrupted or missing, reconstruct it from
@@ -240,7 +256,12 @@ if __name__ == "__main__":
     daemon = background_daemon()
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--info", help="Show info about current image",
+                        action="store_true")
     parser.add_argument("--force", help="Disregard the last updated check",
                         action="store_true")
     args = parser.parse_args()
-    daemon.poll(args.force)
+    if args.info:
+        daemon.show_info()
+    else:
+        daemon.poll(args.force)

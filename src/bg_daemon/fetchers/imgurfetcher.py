@@ -185,6 +185,35 @@ class imgurfetcher:
         req.close()
         return True
 
+    def save_info(self, imgobject, filename):
+
+        if imgobject is None:
+            raise ValueError("ImgObject wasn't initialized properly!")
+
+        if not isinstance(imgobject, GalleryImage):
+            raise ValueError("ImgObject wasn't initialized properly!")
+
+        if filename is None:
+            raise ValueError("Filename wasn't initialized properly!")
+
+        if not isinstance(filename, str) and not isinstance(filename, unicode):
+            raise ValueError("Filename should be a string!")
+
+        info = {}
+
+        info['title'] = imgobject.title.encode('ascii', 'replace')
+        info['link'] = imgobject.link
+        info['author'] = imgobject.account_url if imgobject.account_url else "N/A"
+        info['section'] = imgobject.section
+        info['views'] = imgobject.views
+        info['description'] = imgobject.description
+
+        with open(filename, "wt") as fp:
+            json.dump(info, fp)
+
+        return True
+
+
     """
         _build_query
 
