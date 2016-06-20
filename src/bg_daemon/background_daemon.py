@@ -219,8 +219,25 @@ class background_daemon:
     """
     def show_info(self):
 
-        with open(self.info_file) as fp:
-            info = json.load(fp)
+        if not self.info_file:
+            log.error("Information file is missing!")
+            print("There is no information file! make sure info_file is set"
+                  " in settings.json")
+            return
+
+        if not os.path.exists(self.info_file):
+            print("Can't open the information file! make sure info_file is set"
+                  " in settings.json")
+            return
+
+        try:
+            with open(self.info_file) as fp:
+                info = json.load(fp)
+
+        except IOError as e:
+            print("Couldn't open info file: {}".format(e))
+            return
+
 
         print("Displaying information of current image...")
         for key in info:
