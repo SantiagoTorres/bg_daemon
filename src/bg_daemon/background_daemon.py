@@ -13,6 +13,7 @@ import json
 import time
 import subprocess
 import shlex
+import argparse
 
 from bg_daemon.fetchers.imgurfetcher import imgurfetcher
 from bg_daemon.log import logger as log
@@ -50,6 +51,7 @@ class background_daemon:
     """
     fetcher = None
     target = None
+    info_file = None
     frequency = None
     retries = None
     slack = None
@@ -152,6 +154,7 @@ class background_daemon:
 
         try:
             self.fetcher.fetch(query, self.target)
+            self.fetcher.save_info(query, self.info_file)
         except Exception as e:
             log.error("Fetcher error, couldn't fetch image!")
             if self.backup and not os.path.isdir(self.target):
@@ -176,7 +179,7 @@ class background_daemon:
         Checks whether is time to update or not
 
     """
-    def poll(self):
+    def poll(self, force=False):
 
         filename = os.path.join(HOME, "timestamp")
 
@@ -191,7 +194,7 @@ class background_daemon:
                 log.error("timestamp is corrupted!, initializing...")
                 return self._initialize_datetime()
 
-            if datetime.datetime.now() > updatedate:
+            if force or datetime.datetime.now() > updatedate:
                 log.debug("updating timestamp")
                 self.update()
                 nexttimestamp = datetime.datetime.now() + datetime.timedelta(
@@ -208,6 +211,37 @@ class background_daemon:
         else:
             log.info("No timestamp found! initializing...")
             return self._initialize_timestamp()
+
+    """
+        show_info method
+
+        loads .bg_daemon/info.json and prints the information to stdout
+    """
+    def show_info(self):
+
+        if not self.info_file:
+            log.error("Information file is missing!")
+            print("There is no information file! make sure info_file is set"
+                  " in settings.json")
+            return
+
+        if not os.path.exists(self.info_file):
+            print("Can't open the information file! make sure info_file is set"
+                  " in settings.json")
+            return
+
+        try:
+            with open(self.info_file) as fp:
+                info = json.load(fp)
+
+        except IOError as e:
+            print("Couldn't open info file: {}".format(e))
+            return
+
+
+        print("Displaying information of current image...")
+        for key in info:
+            print("{:30}: {}".format(key, info[key]))
 
     """
         _initialize_timestamp()
@@ -237,4 +271,14 @@ class background_daemon:
 """
 if __name__ == "__main__":
     daemon = background_daemon()
-    daemon.poll()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--info", help="Show info about current image",
+                        action="store_true")
+    parser.add_argument("--force", help="Disregard the last updated check",
+                        action="store_true")
+    args = parser.parse_args()
+    if args.info:
+        daemon.show_info()
+    else:
+        daemon.poll(args.force)

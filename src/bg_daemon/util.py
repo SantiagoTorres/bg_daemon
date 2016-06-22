@@ -133,6 +133,7 @@ def set_default_settings(settings):
     daemon = settings['daemon']
 
     daemon['target'] = os.path.join(HOME, DEFAULT_IMAGE)
+    daemon['info_file']  = os.path.join(HOME, "info.json")
     # check if we need to make any mac specific checks
     if sys.platform == 'darwin':
 
