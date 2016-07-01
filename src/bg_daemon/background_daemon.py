@@ -15,7 +15,7 @@ import subprocess
 import shlex
 import argparse
 
-from bg_daemon.fetchers.imgurfetcher import imgurfetcher
+import importlib
 from bg_daemon.log import logger as log
 from bg_daemon.util import (HOME, initialize_default_settings,
                             initialize_home_directory, get_digest_for_file)
@@ -90,7 +90,10 @@ class background_daemon:
             for key in data:
 
                 if key == 'fetcher':
-                    self.fetcher = imgurfetcher()
+                    module_name = "bg_daemon.fetchers.{}".format(data[key])
+                    module = importlib.import_module(module_name)
+                    fetcher = getattr(module, data[key])
+                    self.fetcher = fetcher()
                     continue
 
                 setattr(self, key, data[key])
@@ -118,7 +121,7 @@ class background_daemon:
     def update(self):
 
         assert(isinstance(self.retries, int))
-        assert(isinstance(self.fetcher, imgurfetcher))
+#        assert(isinstance(self.fetcher, imgurfetcher))
         assert(isinstance(self.target, str) or
                isinstance(self.target, unicode))
         assert(isinstance(self.slack, int))
