@@ -121,7 +121,6 @@ class background_daemon:
     def update(self):
 
         assert(isinstance(self.retries, int))
-#        assert(isinstance(self.fetcher, imgurfetcher))
         assert(isinstance(self.target, str) or
                isinstance(self.target, unicode))
         assert(isinstance(self.slack, int))
