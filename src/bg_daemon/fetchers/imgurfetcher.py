@@ -282,7 +282,8 @@ class imgurfetcher:
                 if selected_image is None:
                     continue
 
-            logger.debug("Selecting Image {}".format(selected_image.title))
+            title = selected_image.title.encode("utf-8", errors='ignore')
+            logger.debug("Selecting Image {}".format(title))
             attempts += 1
             if attempts > 30:
                 return None
