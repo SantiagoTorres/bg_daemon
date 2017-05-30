@@ -158,13 +158,13 @@ class background_daemon:
             self.fetcher.fetch(query, self.target)
             self.fetcher.save_info(query, self.info_file)
         except Exception as e:
-            log.error("Fetcher error, couldn't fetch image!")
+            log.error("Fetcher error, couldn't fetch image! {}".format(e))
             if self.backup and not os.path.isdir(self.target):
                 try:
                     shutil.copyfile(backup_target, self.target)
                     shutil.rmfile(backup_taget)
-                except:
-                    log.error("Couldn't load backup image!")
+                except Exception as e:
+                    log.error("Couldn't load backup image! {}".format(e))
                     pass
             else:
                 raise
