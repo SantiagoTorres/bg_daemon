@@ -8,6 +8,7 @@ import logging
 
 from imgurpython import ImgurClient
 from imgurpython.helpers import GalleryAlbum, GalleryImage
+from imgurpython.imgur.models.image import Image
 from bg_daemon.util import HOME
 
 CLIENT_ID = "b0d705fbff41bc1"
@@ -152,7 +153,7 @@ class imgurfetcher:
         if imgobject is None:
             raise ValueError("ImgObject wasn't initialized properly!")
 
-        if not isinstance(imgobject, GalleryImage):
+        if not isinstance(imgobject, GalleryImage) and not isinstance(imgobject, Image):
             raise ValueError("ImgObject wasn't initialized properly!")
 
         if filename is None:
@@ -190,7 +191,7 @@ class imgurfetcher:
         if imgobject is None:
             raise ValueError("ImgObject wasn't initialized properly!")
 
-        if not isinstance(imgobject, GalleryImage):
+        if not isinstance(imgobject, GalleryImage) and not isinstance(imgobject, Image):
             raise ValueError("ImgObject wasn't initialized properly!")
 
         if filename is None:
@@ -282,7 +283,12 @@ class imgurfetcher:
                 if selected_image is None:
                     continue
 
-            logger.debug("Selecting Image {}".format(selected_image.title))
+            if selected_image.title is None:
+                selected_image.title = "undefined"
+
+            title = selected_image.title.encode("utf-8", errors='ignore')
+
+            logger.debug("Selecting Image {}".format(title))
             attempts += 1
             if attempts > 30:
                 return None
@@ -298,7 +304,10 @@ class imgurfetcher:
             if self.blacklist_words is not None:
 
                 blacklist_words = set(self.blacklist_words)
-                title = set(selected_image.title.split())
+
+                title = {}
+                if selected_image.title is not None:
+                    title = set(selected_image.title.split())
 
                 if len(blacklist_words.intersection(title)):
 
@@ -317,7 +326,7 @@ class imgurfetcher:
 
             elected = True
 
-        logger.debug("Selected image {}".format(selected_image))
+        logger.debug("Selected image {}".format(selected_image.link))
 
         return selected_image
 
